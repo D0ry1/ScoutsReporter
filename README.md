@@ -5,10 +5,10 @@ A Windows desktop application for Scout leaders, commissioners and group adminis
 ## [Download the latest version here](https://github.com/D0ry1/ScoutsReporter/releases/latest)
 
 1. Click the link above and download **ScoutsReporter-v1.0.0.zip**
-2. Extract the zip to any folder on your computer (e.g. Desktop or Documents)
-3. Double-click **ScoutsReporter.exe** to run it
+2. Extract the zip — inside is a single **ScoutsReporter.exe** file
+3. Put it anywhere you like (Desktop, Documents, etc.) and double-click to run
 
-**Requires:** Windows 10 or 11 with the [.NET 8 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0/runtime) installed. If you don't have it, Windows will prompt you to download it when you first run the app.
+No additional software needed — everything is bundled into the one file.
 
 ---
 
@@ -42,8 +42,8 @@ Each report colour-codes members so you can immediately spot who needs attention
 
 ### Installing
 
-1. Download the latest release (the folder containing `ScoutsReporter.exe`)
-2. Place it anywhere on your computer - your Desktop, Documents folder, or wherever is convenient
+1. [Download the latest release](https://github.com/D0ry1/ScoutsReporter/releases/latest) and extract the zip
+2. Place `ScoutsReporter.exe` anywhere on your computer - your Desktop, Documents folder, or wherever is convenient
 3. Double-click `ScoutsReporter.exe` to run it
 
 There is nothing else to install. If Windows SmartScreen shows a warning the first time you run it, click **"More info"** then **"Run anyway"** - this is normal for new applications.
