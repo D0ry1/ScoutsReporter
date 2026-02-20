@@ -4,7 +4,7 @@ A Windows desktop application for Scout leaders, commissioners and group adminis
 
 ## [Download the latest version here](https://github.com/D0ry1/ScoutsReporter/releases/latest)
 
-1. Click the link above and download **ScoutsReporter-v1.1.0.zip**
+1. Click the link above and download **ScoutsReporter-v1.2.0.zip**
 2. Extract the zip — inside is a single **ScoutsReporter.exe** file
 3. Put it anywhere you like (Desktop, Documents, etc.) and double-click to run
 
