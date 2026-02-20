@@ -23,8 +23,15 @@ public class AuthService
     public string ContactId { get; private set; } = "";
     public string UserName { get; private set; } = "";
 
-    public static string DefaultTokenFilePath =>
-        Path.Combine(AppContext.BaseDirectory, "membership_refresh_token.txt");
+    public static string DefaultTokenFilePath
+    {
+        get
+        {
+            var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ScoutsReporter");
+            Directory.CreateDirectory(dir);
+            return Path.Combine(dir, "membership_refresh_token.dat");
+        }
+    }
 
     public AuthService(HttpClient http)
     {
@@ -105,11 +112,11 @@ public class AuthService
         if (!string.IsNullOrEmpty(data.Error))
             throw new InvalidOperationException($"Token exchange failed: {data.ErrorDescription ?? data.Error}");
 
-        // Save refresh token to default location
+        // Save refresh token encrypted with DPAPI (only this Windows user can decrypt)
         if (!string.IsNullOrEmpty(data.RefreshToken))
         {
             var savePath = string.IsNullOrEmpty(_tokenFilePath) ? DefaultTokenFilePath : _tokenFilePath;
-            await File.WriteAllTextAsync(savePath, data.RefreshToken);
+            SaveTokenEncrypted(savePath, data.RefreshToken);
             _tokenFilePath = savePath;
         }
 
@@ -124,7 +131,7 @@ public class AuthService
         if (string.IsNullOrEmpty(_tokenFilePath) || !File.Exists(_tokenFilePath))
             throw new InvalidOperationException("Token file path not set or file does not exist.");
 
-        var rt = (await File.ReadAllTextAsync(_tokenFilePath)).Trim();
+        var rt = LoadTokenDecrypted(_tokenFilePath);
 
         var content = new FormUrlEncodedContent(new Dictionary<string, string>
         {
@@ -144,12 +151,26 @@ public class AuthService
             throw new InvalidOperationException($"Token refresh failed: {data.ErrorDescription ?? data.Error}");
 
         if (!string.IsNullOrEmpty(data.RefreshToken))
-            await File.WriteAllTextAsync(_tokenFilePath, data.RefreshToken);
+            SaveTokenEncrypted(_tokenFilePath, data.RefreshToken);
 
         IdToken = data.IdToken ?? "";
         var claims = DecodeJwtPayload(IdToken);
         ContactId = GetClaim(claims, "extension_ContactId");
         UserName = GetClaim(claims, "name");
+    }
+
+    private static void SaveTokenEncrypted(string path, string token)
+    {
+        var plain = Encoding.UTF8.GetBytes(token);
+        var encrypted = ProtectedData.Protect(plain, null, DataProtectionScope.CurrentUser);
+        File.WriteAllBytes(path, encrypted);
+    }
+
+    private static string LoadTokenDecrypted(string path)
+    {
+        var encrypted = File.ReadAllBytes(path);
+        var plain = ProtectedData.Unprotect(encrypted, null, DataProtectionScope.CurrentUser);
+        return Encoding.UTF8.GetString(plain);
     }
 
     private static Dictionary<string, JsonElement> DecodeJwtPayload(string token)

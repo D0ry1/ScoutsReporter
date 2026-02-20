@@ -171,7 +171,7 @@ The app uses Microsoft Edge WebView2 to show the login page. This is built into 
 
 - The app connects **only** to the official Scouts membership API (the same system used by the membership website).
 - Your login credentials are entered directly into the Scouts login page - they are never seen or stored by this app.
-- A refresh token is saved locally on your computer (in the same folder as the app) so you don't have to log in every time. This token is automatically refreshed and only works for your account.
+- A refresh token is saved in your Windows AppData folder, encrypted so that only your Windows account can read it. This token is automatically refreshed and only works for your account. Logging out deletes it.
 - No data is sent anywhere other than the official Scouts servers. The app does not collect analytics, phone home, or share any information with third parties.
 - Report data exists only in memory while the app is running. When you close the app, it is gone (unless you have exported it to a file).
 

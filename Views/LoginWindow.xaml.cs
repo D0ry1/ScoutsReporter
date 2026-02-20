@@ -1,3 +1,4 @@
+using System.IO;
 using System.Web;
 using System.Windows;
 using Microsoft.Web.WebView2.Core;
@@ -27,7 +28,11 @@ public partial class LoginWindow : Window
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        await LoginBrowser.EnsureCoreWebView2Async();
+        var userDataFolder = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "ScoutsReporter", "WebView2");
+        var env = await CoreWebView2Environment.CreateAsync(null, userDataFolder);
+        await LoginBrowser.EnsureCoreWebView2Async(env);
         LoginBrowser.CoreWebView2.NavigationStarting += OnNavigationStarting;
         LoginBrowser.CoreWebView2.NavigationCompleted += OnNavigationCompleted;
         LoginBrowser.CoreWebView2.Navigate(_authorizeUrl);
