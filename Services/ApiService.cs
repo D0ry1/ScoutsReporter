@@ -71,7 +71,7 @@ public class ApiService
             order = "asc",
             orderBy = "UnitName",
             pageNo = 1,
-            pageSize = 50,
+            pageSize = 500,
         });
 
         var units = new List<UnitInfo>();
@@ -141,7 +141,7 @@ public class ApiService
                 distinct = true,
                 isDashboardQuery = false,
                 pageNo = 1,
-                pageSize = 100,
+                pageSize = 500,
             });
 
             if (result?.ValueKind == JsonValueKind.Object &&
