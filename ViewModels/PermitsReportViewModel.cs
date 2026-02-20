@@ -1,9 +1,11 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Windows;
 using Microsoft.Win32;
 using ScoutsReporter.Models;
 using ScoutsReporter.Services;
+using ScoutsReporter.Views;
 
 namespace ScoutsReporter.ViewModels;
 
@@ -136,6 +138,13 @@ public partial class PermitsReportViewModel : ObservableObject
     {
         if (ReportRows.Count == 0) return;
 
+        var result = MessageBox.Show(
+            "WARNING: CSV files cannot be password-protected.\n\nThis report contains sensitive personal data. The exported CSV file will be completely unencrypted and readable by anyone with access to it.\n\nFor secure exports, use the Excel option instead which allows password protection.\n\nAre you sure you want to export as unprotected CSV?",
+            "CSV Export Warning",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning);
+        if (result != MessageBoxResult.Yes) return;
+
         var dlg = new SaveFileDialog
         {
             Title = "Export Permits Report",
@@ -162,6 +171,9 @@ public partial class PermitsReportViewModel : ObservableObject
     {
         if (ReportRows.Count == 0) return;
 
+        var pwDialog = new PasswordDialog { Owner = Application.Current.MainWindow };
+        if (pwDialog.ShowDialog() != true) return;
+
         var dlg = new SaveFileDialog
         {
             Title = "Export Permits Report as Excel",
@@ -173,7 +185,7 @@ public partial class PermitsReportViewModel : ObservableObject
         {
             try
             {
-                ExcelExportService.ExportPermitsReport(ReportRows.ToList(), dlg.FileName);
+                ExcelExportService.ExportPermitsReport(ReportRows.ToList(), dlg.FileName, pwDialog.Password);
                 StatusText = $"Excel exported to {dlg.FileName}";
             }
             catch (Exception ex)

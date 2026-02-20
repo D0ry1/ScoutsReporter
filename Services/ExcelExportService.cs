@@ -1,4 +1,6 @@
+using System.IO;
 using ClosedXML.Excel;
+using OfficeOpenXml;
 using ScoutsReporter.Models;
 
 namespace ScoutsReporter.Services;
@@ -30,7 +32,7 @@ public static class ExcelExportService
         ["IN PROGRESS"] = XLColor.FromArgb(255, 245, 215),
     };
 
-    public static void ExportDbsReport(List<DbsReportRow> report, string filePath)
+    public static void ExportDbsReport(List<DbsReportRow> report, string filePath, string? password = null)
     {
         using var wb = new XLWorkbook();
         var ws = wb.Worksheets.Add("DBS Report");
@@ -66,10 +68,10 @@ public static class ExcelExportService
         }
 
         FinalizeSheet(ws);
-        wb.SaveAs(filePath);
+        SaveWithOptionalEncryption(wb, filePath, password);
     }
 
-    public static void ExportTrainingReport(List<TrainingReportRow> report, List<string> sortedTitles, string filePath)
+    public static void ExportTrainingReport(List<TrainingReportRow> report, List<string> sortedTitles, string filePath, string? password = null)
     {
         var expiringTrainings = new HashSet<string> { "First Response", "Safeguarding", "Safety" };
 
@@ -127,10 +129,10 @@ public static class ExcelExportService
         }
 
         FinalizeSheet(ws);
-        wb.SaveAs(filePath);
+        SaveWithOptionalEncryption(wb, filePath, password);
     }
 
-    public static void ExportPermitsReport(List<PermitReportRow> report, string filePath)
+    public static void ExportPermitsReport(List<PermitReportRow> report, string filePath, string? password = null)
     {
         using var wb = new XLWorkbook();
         var ws = wb.Worksheets.Add("Permits Report");
@@ -191,7 +193,24 @@ public static class ExcelExportService
         }
 
         FinalizeSheet(ws);
-        wb.SaveAs(filePath);
+        SaveWithOptionalEncryption(wb, filePath, password);
+    }
+
+    private static void SaveWithOptionalEncryption(XLWorkbook wb, string filePath, string? password)
+    {
+        if (string.IsNullOrEmpty(password))
+        {
+            wb.SaveAs(filePath);
+            return;
+        }
+
+        using var ms = new MemoryStream();
+        wb.SaveAs(ms);
+        ms.Position = 0;
+
+        using var package = new ExcelPackage(ms);
+        package.Encryption.Password = password;
+        package.SaveAs(new FileInfo(filePath));
     }
 
     private static void WriteHeaders(IXLWorksheet ws, string[] headers)
