@@ -2,6 +2,14 @@
 
 A Windows desktop application for Scout leaders, commissioners and group administrators to quickly check the compliance status of their volunteers. It connects to the Scouts membership system and generates reports on DBS checks, training, and activity permits - all in one place.
 
+## [Download the latest version here](https://github.com/D0ry1/ScoutsReporter/releases/latest)
+
+1. Click the link above and download **ScoutsReporter-v1.0.0.zip**
+2. Extract the zip to any folder on your computer (e.g. Desktop or Documents)
+3. Double-click **ScoutsReporter.exe** to run it
+
+**Requires:** Windows 10 or 11 with the [.NET 8 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0/runtime) installed. If you don't have it, Windows will prompt you to download it when you first run the app.
+
 ---
 
 ## What does it do?
