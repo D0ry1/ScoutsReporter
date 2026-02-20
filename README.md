@@ -4,11 +4,11 @@ A Windows desktop application for Scout leaders, commissioners and group adminis
 
 ## [Download the latest version here](https://github.com/D0ry1/ScoutsReporter/releases/latest)
 
-1. Click the link above and download **ScoutsReporter-v1.2.0.zip**
+1. Click the link above and download **ScoutsReporter.zip**
 2. Extract the zip — inside is a single **ScoutsReporter.exe** file
 3. Put it anywhere you like (Desktop, Documents, etc.) and double-click to run
 
-No additional software needed — everything is bundled into the one file.
+No additional software needed — everything is bundled into the one file. The app will let you know when a new version is available.
 
 ![ScoutsReporter screenshot](screenshot.png)
 
@@ -18,7 +18,21 @@ No additional software needed — everything is bundled into the one file.
 
 Scouts Reporter pulls data from the same system that powers the Scouts membership website and presents it in a simple, searchable table format. Instead of clicking through dozens of individual profiles online, you can see everyone's status at a glance.
 
-It produces three reports:
+### Dashboard
+
+The Dashboard tab gives you a high-level compliance overview without having to read through full reports. It shows three headline tiles:
+
+- **DBS / Disclosures** — percentage of volunteers with a valid DBS check
+- **Safety & Safeguarding** — percentage up to date on mandatory Safety and Safeguarding training
+- **First Response** — percentage with current First Response training
+
+Each tile is colour-coded green, amber or red depending on the compliance level (green at 90%+, amber at 70%+, red below 70%).
+
+If you have access to multiple units, the dashboard breaks down compliance per unit with expandable sections showing team-level detail, flag summaries, and lists of members who need attention.
+
+### Reports
+
+The app produces three detailed reports:
 
 | Report | What it shows |
 |---|---|
@@ -66,6 +80,13 @@ No configuration is needed. The app will ask you to log in and that's it.
 4. Once you have logged in successfully, the browser window will close automatically and the app will show your name and group in the header.
 
 Your login is remembered between sessions. The next time you open the app, it will try to log you in automatically. If that fails (for example, if it has been a long time), you will just need to click Login again.
+
+### Using the Dashboard
+
+1. Make sure you are logged in.
+2. Click the **Dashboard** tab (the first tab).
+3. Click **Run Dashboard**. The app will run the DBS and Training reports behind the scenes and then display the summary tiles.
+4. If you have multiple units, click the arrow on any unit card to expand it and see team-level breakdowns, flag summaries, and members who need attention.
 
 ### Running a report
 
@@ -121,6 +142,8 @@ Once a report has been generated, you can save it to a file:
 - **Export CSV** - saves as a CSV file that can be opened in Excel, Google Sheets, or any spreadsheet application
 - **Export Excel** - saves as a proper Excel (.xlsx) file with formatting
 
+You can optionally password-protect exported files. When exporting, you will be prompted to set a password (or skip to export without one). Passwords must be at least 8 characters and include uppercase, lowercase and a number.
+
 Click the button, choose where to save the file, and you're done. The default filename includes today's date and time so you can keep a history of reports.
 
 ### Selecting which units to include (multi-unit users)
@@ -135,6 +158,10 @@ If your Scouts role gives you access to more than one unit (for example, distric
 
 If you only have access to one unit, this feature is hidden and everything works as normal.
 
+### Dark mode
+
+Click **Dark Mode** in the bottom-right corner of the status bar to switch to a dark colour scheme. Click again (now labelled **Light Mode**) to switch back. Your preference is saved and remembered next time you open the app.
+
 ### Cancelling a report
 
 If a report is taking too long or you started it by mistake, click the **Cancel** button that appears while a report is running.
@@ -142,6 +169,12 @@ If a report is taking too long or you started it by mistake, click the **Cancel*
 ### Logging out
 
 Click the red **Logout** button in the header bar. This clears all data from the app and removes your saved login. You will need to log in again next time.
+
+---
+
+## Automatic update notifications
+
+When the app starts, it checks GitHub for new releases in the background. If a newer version is available, a banner will appear below the header bar with a link to download it. You can dismiss the banner and it won't appear again for that version. When a newer version is released after that, the banner will return.
 
 ---
 
@@ -169,10 +202,10 @@ The app uses Microsoft Edge WebView2 to show the login page. This is built into 
 
 ## Privacy and security
 
-- The app connects **only** to the official Scouts membership API (the same system used by the membership website).
+- The app connects **only** to the official Scouts membership API (the same system used by the membership website) and to GitHub (to check for new releases).
 - Your login credentials are entered directly into the Scouts login page - they are never seen or stored by this app.
 - A refresh token is saved in your Windows AppData folder, encrypted so that only your Windows account can read it. This token is automatically refreshed and only works for your account. Logging out deletes it.
-- No data is sent anywhere other than the official Scouts servers. The app does not collect analytics, phone home, or share any information with third parties.
+- No data is sent anywhere other than the official Scouts servers and the GitHub releases API. The app does not collect analytics, phone home, or share any information with third parties.
 - Report data exists only in memory while the app is running. When you close the app, it is gone (unless you have exported it to a file).
 
 ---
@@ -204,37 +237,46 @@ The app uses Microsoft Edge WebView2 to show the login page. This is built into 
 ```
 ScoutsReporter/
   Converters/
-    FlagToColorConverter.cs   - Status flag colour coding
+    FlagToColorConverter.cs     - Status flag colour coding and visibility converters
   Fonts/
-    NunitoSans.ttf            - Nunito Sans regular font
-    NunitoSans-Italic.ttf     - Nunito Sans italic font
+    NunitoSans.ttf              - Nunito Sans regular font
+    NunitoSans-Italic.ttf       - Nunito Sans italic font
   Models/
-    Member.cs                 - Member, UnitInfo, TeamInfo data classes
-    SelectableUnit.cs         - Observable wrapper for unit picker
-    DisclosureRecord.cs       - DBS disclosure data
-    TrainingRecord.cs         - Training completion data
-    PermitRecord.cs           - Activity permit data
+    Member.cs                   - Member, UnitInfo, TeamInfo data classes
+    SelectableUnit.cs           - Observable wrapper for unit picker
+    DisclosureRecord.cs         - DBS disclosure data
+    TrainingRecord.cs           - Training completion data
+    PermitRecord.cs             - Activity permit data
   Services/
-    AuthService.cs            - OAuth login, token refresh
-    ApiService.cs             - All Scouts API calls
-    DataCacheService.cs       - Shared cache for units/teams/members
-    DisclosureService.cs      - DBS-specific business logic
-    TrainingService.cs        - Training-specific business logic
-    PermitService.cs          - Permits-specific business logic
-    CsvExportService.cs       - CSV file export
-    ExcelExportService.cs     - Excel file export
+    AuthService.cs              - OAuth login, token refresh
+    ApiService.cs               - All Scouts API calls
+    DataCacheService.cs         - Shared cache for units/teams/members
+    DisclosureService.cs        - DBS-specific business logic
+    TrainingService.cs          - Training-specific business logic
+    PermitService.cs            - Permits-specific business logic
+    SettingsService.cs          - Persistent settings (dark mode, dismissed updates)
+    ThemeService.cs             - Light/dark theme switching
+    UpdateService.cs            - GitHub release update checker
+    CsvExportService.cs         - CSV file export
+    ExcelExportService.cs       - Excel file export
+  Themes/
+    LightTheme.xaml             - Light colour scheme
+    DarkTheme.xaml              - Dark colour scheme
   ViewModels/
-    MainViewModel.cs          - App shell, login/logout, unit picker
-    DbsReportViewModel.cs     - DBS report logic
-    TrainingReportViewModel.cs - Training report logic
-    PermitsReportViewModel.cs - Permits report logic
+    MainViewModel.cs            - App shell, login/logout, unit picker, update check
+    DashboardViewModel.cs       - Dashboard compliance overview
+    DbsReportViewModel.cs       - DBS report logic
+    TrainingReportViewModel.cs  - Training report logic
+    PermitsReportViewModel.cs   - Permits report logic
   Views/
-    LoginWindow.xaml          - WebView2 login browser
-    DbsReportView.xaml        - DBS report tab
-    TrainingReportView.xaml   - Training report tab
-    PermitsReportView.xaml    - Permits report tab
-  App.xaml                    - Global styles and resources
-  MainWindow.xaml             - Main app window layout
-  ScoutsReporter.csproj       - Project file
-  app.ico                     - Application icon
+    LoginWindow.xaml            - WebView2 login browser
+    PasswordDialog.xaml         - Password protection dialog for exports
+    DashboardView.xaml          - Dashboard tab
+    DbsReportView.xaml          - DBS report tab
+    TrainingReportView.xaml     - Training report tab
+    PermitsReportView.xaml      - Permits report tab
+  App.xaml                      - Global styles and resources
+  MainWindow.xaml               - Main app window layout
+  ScoutsReporter.csproj         - Project file
+  app.ico                       - Application icon
 ```

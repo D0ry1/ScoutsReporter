@@ -9,6 +9,7 @@
     <Grid TextElement.Foreground="{DynamicResource PrimaryTextBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -107,8 +108,49 @@
             </Grid>
         </Border>
 
+        <!-- Update banner -->
+        <Border Grid.Row="1"
+                Background="{DynamicResource DialogInfoBoxBackgroundBrush}"
+                BorderBrush="{DynamicResource DialogInfoBoxBorderBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="12,8"
+                Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="&#x2139;" FontSize="16"
+                           Foreground="{DynamicResource BrandPurpleBrush}"
+                           VerticalAlignment="Center" Margin="0,0,8,0" />
+
+                <TextBlock Grid.Column="1" VerticalAlignment="Center"
+                           Foreground="{DynamicResource PrimaryTextBrush}" FontSize="13">
+                    <Run Text="A new version" />
+                    <Run Text="{Binding UpdateVersion, StringFormat='v{0}', Mode=OneWay}" FontWeight="Bold" />
+                    <Run Text="is available!" />
+                </TextBlock>
+
+                <Button Grid.Column="2" Content="Download"
+                        Command="{Binding OpenUpdatePageCommand}"
+                        Background="{DynamicResource BrandPurpleBrush}" Foreground="White"
+                        Padding="12,4" FontSize="12" FontWeight="SemiBold"
+                        Margin="8,0" VerticalAlignment="Center" Cursor="Hand" />
+
+                <Button Grid.Column="3" Content="&#x2715;"
+                        Command="{Binding DismissUpdateCommand}"
+                        Background="Transparent" BorderThickness="0"
+                        Foreground="{DynamicResource MutedTextBrush}"
+                        FontSize="14" Padding="4,0"
+                        VerticalAlignment="Center" Cursor="Hand" />
+            </Grid>
+        </Border>
+
         <!-- Tab Control -->
-        <TabControl Grid.Row="1" Margin="8"
+        <TabControl Grid.Row="2" Margin="8"
                     Background="{DynamicResource WindowBackgroundBrush}">
             <TabItem Header="Dashboard">
                 <views:DashboardView DataContext="{Binding Dashboard}" />
@@ -125,7 +167,7 @@
         </TabControl>
 
         <!-- Status bar -->
-        <Border Grid.Row="2" Background="{DynamicResource MainStatusBarBackgroundBrush}" Padding="8,4">
+        <Border Grid.Row="3" Background="{DynamicResource MainStatusBarBackgroundBrush}" Padding="8,4">
             <Grid>
                 <TextBlock Text="{Binding StatusText}" FontSize="11"
                            Foreground="{DynamicResource TertiaryTextBrush}"

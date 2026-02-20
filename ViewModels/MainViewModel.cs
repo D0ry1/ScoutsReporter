@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Windows;
@@ -38,6 +39,17 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isDarkMode;
 
+    // ── Update banner ────────────────────────────────────────────
+
+    [ObservableProperty]
+    private bool _isUpdateAvailable;
+
+    [ObservableProperty]
+    private string _updateVersion = "";
+
+    [ObservableProperty]
+    private string _updateReleaseUrl = "";
+
     // ── Unit picker ──────────────────────────────────────────────
 
     public ObservableCollection<SelectableUnit> AvailableUnits { get; } = new();
@@ -76,6 +88,9 @@ public partial class MainViewModel : ObservableObject
 
         // Try auto-login from saved token on startup
         _ = TryAutoLoginAsync();
+
+        // Check for updates in the background
+        _ = CheckForUpdateAsync();
     }
 
     partial void OnIsDarkModeChanged(bool value)
@@ -247,6 +262,37 @@ public partial class MainViewModel : ObservableObject
 
         UpdateGroupName();
         UpdateUnitSelectionSummary();
+    }
+
+    // ── Update commands ─────────────────────────────────────────
+
+    [RelayCommand]
+    private void OpenUpdatePage()
+    {
+        if (!string.IsNullOrEmpty(UpdateReleaseUrl))
+            Process.Start(new ProcessStartInfo(UpdateReleaseUrl) { UseShellExecute = true });
+    }
+
+    [RelayCommand]
+    private void DismissUpdate()
+    {
+        IsUpdateAvailable = false;
+        SettingsService.SaveDismissedUpdateVersion(UpdateVersion);
+    }
+
+    private async Task CheckForUpdateAsync()
+    {
+        var info = await UpdateService.CheckForUpdateAsync();
+        if (info == null)
+            return;
+
+        var dismissed = SettingsService.LoadDismissedUpdateVersion();
+        if (dismissed == info.NewVersion)
+            return;
+
+        UpdateVersion = info.NewVersion;
+        UpdateReleaseUrl = info.ReleaseUrl;
+        IsUpdateAvailable = true;
     }
 
     private void UpdateGroupName()

@@ -9,6 +9,7 @@
     <ApplicationIcon>app.ico</ApplicationIcon>
     <AssemblyName>ScoutsReporter</AssemblyName>
     <RootNamespace>ScoutsReporter</RootNamespace>
+    <Version>1.3.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
