@@ -1,0 +1,85 @@
+<UserControl x:Class="ScoutsReporter.Views.DbsReportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="4">
+            <Button Content="Run Report" Command="{Binding RunReportCommand}"
+                    IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}"
+                    Padding="12,6" Margin="0,0,8,0" />
+            <Button Content="Cancel" Command="{Binding RunReportCancelCommand}"
+                    Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibilityConverter}}"
+                    Padding="12,6" Margin="0,0,8,0" />
+            <Button Content="Export CSV" Command="{Binding ExportCsvCommand}"
+                    IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}"
+                    Padding="12,6" Margin="0,0,8,0" />
+            <Button Content="Export Excel" Command="{Binding ExportExcelCommand}"
+                    IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}"
+                    Padding="12,6" Margin="0,0,16,0" />
+            <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                     Width="200" Padding="4,4" VerticalAlignment="Center"
+                     Margin="0,0,8,0" />
+            <TextBlock Text="Search" VerticalAlignment="Center"
+                       Foreground="#9E9E9E" FontSize="11" Margin="0,0,16,0" />
+            <TextBlock Text="{Binding ProgressText}" VerticalAlignment="Center"
+                       Foreground="#757575" FontSize="11" />
+        </StackPanel>
+
+        <!-- DataGrid -->
+        <DataGrid Grid.Row="1" ItemsSource="{Binding ReportRows}"
+                  AutoGenerateColumns="False" IsReadOnly="True"
+                  CanUserSortColumns="True" CanUserReorderColumns="True"
+                  GridLinesVisibility="Horizontal" AlternatingRowBackground="#FAFAFA"
+                  HeadersVisibility="Column" SelectionMode="Single"
+                  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="160" />
+                <DataGridTextColumn Header="Mem #" Binding="{Binding MembershipNumber}" Width="100" />
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="180" />
+                <DataGridTextColumn Header="Issued" Binding="{Binding IssuedDate}" Width="90" />
+                <DataGridTextColumn Header="Expiry" Binding="{Binding ExpiryDate}" Width="90" />
+                <DataGridTextColumn Header="Warning" Binding="{Binding ExpiryWarning}" Width="150" />
+                <DataGridTextColumn Header="Onboarding DBS" Binding="{Binding OnboardingDbs}" Width="110" />
+                <DataGridTextColumn Header="Disclosure Status" Binding="{Binding DisclosureStatus}" Width="140" />
+                <DataGridTextColumn Header="Certificate" Binding="{Binding Certificate}" Width="110" />
+                <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100" />
+                <DataGridTextColumn Header="Authority" Binding="{Binding Authority}" Width="100" />
+                <DataGridTextColumn Header="Total" Binding="{Binding TotalDisclosures}" Width="50" />
+                <DataGridTemplateColumn Header="Flag" Width="130" SortMemberPath="Flag">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Flag}" FontWeight="Bold"
+                                       Foreground="{Binding Flag, Converter={StaticResource FlagToColorConverter}}"
+                                       Background="{Binding Flag, Converter={StaticResource FlagToBackgroundConverter}}"
+                                       Padding="4,2" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Outstanding" Binding="{Binding OtherOutstanding}" Width="160" />
+                <DataGridTextColumn Header="Roles" Binding="{Binding Roles}" Width="300" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Summary bar -->
+        <Border Grid.Row="2" Background="#F3E5F5" Padding="8,4">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock FontSize="12">
+                    <Run Text="Total: " FontWeight="Bold" />
+                    <Run Text="{Binding TotalMembers, Mode=OneWay}" />
+                    <Run Text="  |  OK: " />
+                    <Run Text="{Binding OkCount, Mode=OneWay}" Foreground="#23a950" />
+                    <Run Text="  |  Need Attention: " />
+                    <Run Text="{Binding AttentionCount, Mode=OneWay}" Foreground="#e22e12" />
+                </TextBlock>
+                <TextBlock Text="{Binding StatusText}" Margin="24,0,0,0"
+                           Foreground="#616161" FontSize="11" VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
