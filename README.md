@@ -10,6 +10,8 @@ A Windows desktop application for Scout leaders, commissioners and group adminis
 
 No additional software needed — everything is bundled into the one file.
 
+![ScoutsReporter screenshot](screenshot.png)
+
 ---
 
 ## What does it do?
