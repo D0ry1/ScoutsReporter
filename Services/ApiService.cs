@@ -164,7 +164,12 @@ public class ApiService
                             FullName = m.GetProp("FullName").Trim(),
                         };
                     }
-                    var roleStr = $"{m.GetProp("Role")} ({m.GetProp("RoleStatusName")}) - {t.TeamName} @ {(string.IsNullOrEmpty(m.GetProp("UnitName")) ? t.UnitName : m.GetProp("UnitName"))}";
+                    var unitName = string.IsNullOrEmpty(m.GetProp("UnitName")) ? t.UnitName : m.GetProp("UnitName");
+                    members[cid].UnitNames.Add(unitName);
+                    if (!members[cid].UnitTeams.ContainsKey(unitName))
+                        members[cid].UnitTeams[unitName] = new HashSet<string>();
+                    members[cid].UnitTeams[unitName].Add(t.TeamName);
+                    var roleStr = $"{m.GetProp("Role")} ({m.GetProp("RoleStatusName")}) - {t.TeamName} @ {unitName}";
                     if (!members[cid].Roles.Contains(roleStr))
                         members[cid].Roles.Add(roleStr);
                     count++;

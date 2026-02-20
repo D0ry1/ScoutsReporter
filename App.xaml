@@ -4,43 +4,50 @@
              xmlns:converters="clr-namespace:ScoutsReporter.Converters"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <FontFamily x:Key="NunitoSans">pack://application:,,,/Fonts/#Nunito Sans</FontFamily>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/LightTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
 
-        <DropShadowEffect x:Key="PopupDropShadow" BlurRadius="10" ShadowDepth="3"
-                          Opacity="0.3" Color="#000000" />
+            <FontFamily x:Key="NunitoSans">pack://application:,,,/Fonts/#Nunito Sans</FontFamily>
 
-        <converters:FlagToColorConverter x:Key="FlagToColorConverter" />
-        <converters:FlagToBackgroundConverter x:Key="FlagToBackgroundConverter" />
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
-        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+            <DropShadowEffect x:Key="PopupDropShadow" BlurRadius="10" ShadowDepth="3"
+                              Opacity="0.3" Color="#000000" />
 
-        <!-- Apply Nunito Sans globally -->
-        <Style TargetType="Window">
-            <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
-        </Style>
-        <Style TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
-        </Style>
-        <Style TargetType="TextBox">
-            <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
-        </Style>
-        <Style TargetType="Button">
-            <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
-        </Style>
-        <Style TargetType="TabItem">
-            <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
-        </Style>
-        <Style TargetType="DataGrid">
-            <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
-        </Style>
-        <Style TargetType="CheckBox">
-            <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
-        </Style>
+            <converters:FlagToColorConverter x:Key="FlagToColorConverter" />
+            <converters:FlagToBackgroundConverter x:Key="FlagToBackgroundConverter" />
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+            <converters:PercentToColorConverter x:Key="PercentToColorConverter" />
 
-        <Style x:Key="FlagCell" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Padding" Value="4,2" />
-        </Style>
+            <!-- Apply Nunito Sans globally -->
+            <Style TargetType="Window">
+                <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
+            </Style>
+            <Style TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
+            </Style>
+            <Style TargetType="Button">
+                <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
+            </Style>
+            <Style TargetType="TabItem">
+                <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
+            </Style>
+            <Style TargetType="DataGrid">
+                <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
+            </Style>
+            <Style TargetType="CheckBox">
+                <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
+            </Style>
+
+            <Style x:Key="FlagCell" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="Padding" Value="4,2" />
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

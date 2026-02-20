@@ -37,6 +37,8 @@ public partial class TrainingReportViewModel : ObservableObject
 
     // Keep for CSV export
     private List<TrainingReportRow> _reportRows = new();
+
+    public IReadOnlyList<TrainingReportRow> ReportRowsReadOnly => _reportRows;
     private List<string> _sortedTitles = new();
 
     [ObservableProperty] private int _totalMembers;

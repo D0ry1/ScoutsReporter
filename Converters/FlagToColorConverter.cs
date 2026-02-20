@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
@@ -11,23 +12,30 @@ public class FlagToColorConverter : IValueConverter
         var flag = value?.ToString() ?? "";
         return flag switch
         {
-            "EXPIRED" => new SolidColorBrush(Color.FromRgb(0xe2, 0x2e, 0x12)),      // Scouts Red
-            "EXPIRING SOON" => new SolidColorBrush(Color.FromRgb(0xff, 0xe6, 0x27)), // Scouts Yellow
-            "ACTION NEEDED" => new SolidColorBrush(Color.FromRgb(0xe2, 0x2e, 0x12)),
-            "DBS IN PROGRESS" => new SolidColorBrush(Color.FromRgb(0xff, 0xe6, 0x27)), // Scouts Yellow
-            "NO DISCLOSURE" => new SolidColorBrush(Color.FromRgb(0x00, 0x39, 0x82)), // Scouts Navy
-            "NOT IN SYSTEM" => new SolidColorBrush(Color.FromRgb(0x00, 0x39, 0x82)),
-            "MISSING" => new SolidColorBrush(Color.FromRgb(0xe2, 0x2e, 0x12)),
+            "EXPIRED" => FindBrush("StatusDangerBrush", Color.FromRgb(0xe2, 0x2e, 0x12)),
+            "EXPIRING SOON" => new SolidColorBrush(Color.FromRgb(0xff, 0xe6, 0x27)),
+            "ACTION NEEDED" => FindBrush("StatusDangerBrush", Color.FromRgb(0xe2, 0x2e, 0x12)),
+            "DBS IN PROGRESS" => new SolidColorBrush(Color.FromRgb(0xff, 0xe6, 0x27)),
+            "NO DISCLOSURE" => FindBrush("StatusNavyBrush", Color.FromRgb(0x00, 0x39, 0x82)),
+            "NOT IN SYSTEM" => FindBrush("StatusNavyBrush", Color.FromRgb(0x00, 0x39, 0x82)),
+            "MISSING" => FindBrush("StatusDangerBrush", Color.FromRgb(0xe2, 0x2e, 0x12)),
             "IN PROGRESS" => new SolidColorBrush(Color.FromRgb(0xff, 0xe6, 0x27)),
-            "NO PERMITS" => new SolidColorBrush(Color.FromRgb(0x00, 0x39, 0x82)),
-            "OK" => new SolidColorBrush(Color.FromRgb(0x23, 0xa9, 0x50)),            // Scouts Green
-            "No expiry" => new SolidColorBrush(Color.FromRgb(0x23, 0xa9, 0x50)),
-            _ => new SolidColorBrush(Colors.Black),
+            "NO PERMITS" => FindBrush("StatusNavyBrush", Color.FromRgb(0x00, 0x39, 0x82)),
+            "OK" => FindBrush("StatusOkBrush", Color.FromRgb(0x23, 0xa9, 0x50)),
+            "No expiry" => FindBrush("StatusOkBrush", Color.FromRgb(0x23, 0xa9, 0x50)),
+            _ => FindBrush("PrimaryTextBrush", Colors.Black),
         };
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();
+
+    internal static Brush FindBrush(string key, Color fallbackColor)
+    {
+        if (Application.Current?.TryFindResource(key) is Brush brush)
+            return brush;
+        return new SolidColorBrush(fallbackColor);
+    }
 }
 
 public class FlagToBackgroundConverter : IValueConverter
@@ -56,7 +64,7 @@ public class FlagToBackgroundConverter : IValueConverter
 public class BoolToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        => value is true ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+        => value is true ? Visibility.Visible : Visibility.Collapsed;
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();
@@ -74,7 +82,21 @@ public class InverseBoolConverter : IValueConverter
 public class InverseBoolToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        => value is true ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
+        => value is true ? Visibility.Collapsed : Visibility.Visible;
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
+public class PercentToColorConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        var percent = System.Convert.ToDouble(value);
+        if (percent >= 90) return FlagToColorConverter.FindBrush("StatusOkBrush", Color.FromRgb(0x23, 0xa9, 0x50));
+        if (percent >= 70) return FlagToColorConverter.FindBrush("StatusWarningBrush", Color.FromRgb(0xFF, 0x98, 0x00));
+        return FlagToColorConverter.FindBrush("StatusDangerBrush", Color.FromRgb(0xe2, 0x2e, 0x12));
+    }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();

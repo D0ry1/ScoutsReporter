@@ -8,6 +8,8 @@ public class Member
     public string FullName { get; set; } = "";
     public List<string> Roles { get; set; } = new();
     public List<string> MembershipNumbers { get; set; } = new();
+    public HashSet<string> UnitNames { get; set; } = new();
+    public Dictionary<string, HashSet<string>> UnitTeams { get; set; } = new();
 }
 
 public class UnitInfo

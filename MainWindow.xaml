@@ -4,8 +4,9 @@
         xmlns:views="clr-namespace:ScoutsReporter.Views"
         Title="Scouts Reporter" Height="750" Width="1200"
         WindowStartupLocation="CenterScreen"
-        Icon="fleur-de-lis-marque-purple-png.png">
-    <Grid>
+        Icon="fleur-de-lis-marque-purple-png.png"
+        Background="{DynamicResource WindowBackgroundBrush}">
+    <Grid TextElement.Foreground="{DynamicResource PrimaryTextBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -13,7 +14,7 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Border Grid.Row="0" Background="#7413dc" Padding="12">
+        <Border Grid.Row="0" Background="{DynamicResource BrandPurpleBrush}" Padding="12">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -24,7 +25,7 @@
                     <TextBlock Text="Scouts Reporter" FontSize="20" FontWeight="Bold"
                                Foreground="White" />
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Foreground="#D1C4E9" FontSize="12">
+                        <TextBlock Foreground="{DynamicResource BrandHeaderSubtitleBrush}" FontSize="12">
                             <Run Text="{Binding GroupName, Mode=OneWay, FallbackValue=''}" />
                             <Run Text=" " />
                             <Run Text="{Binding UserName, Mode=OneWay, StringFormat='({0})', FallbackValue=''}" />
@@ -36,7 +37,7 @@
                                 Background="Transparent" BorderThickness="0"
                                 Padding="4,0" Margin="2,0,0,0"
                                 VerticalAlignment="Center" Cursor="Hand">
-                            <TextBlock Text="&#x25BC;" Foreground="#D1C4E9" FontSize="10" />
+                            <TextBlock Text="&#x25BC;" Foreground="{DynamicResource BrandHeaderSubtitleBrush}" FontSize="10" />
                         </Button>
                     </StackPanel>
 
@@ -47,13 +48,14 @@
                            StaysOpen="False"
                            AllowsTransparency="True"
                            PopupAnimation="Fade">
-                        <Border Background="White" BorderBrush="#7413dc" BorderThickness="1"
+                        <Border Background="{DynamicResource PopupBackgroundBrush}"
+                                BorderBrush="{DynamicResource BrandPurpleBrush}" BorderThickness="1"
                                 CornerRadius="4" Padding="12"
                                 Effect="{StaticResource PopupDropShadow}"
                                 MinWidth="220">
                             <StackPanel>
                                 <TextBlock Text="Select Units" FontWeight="SemiBold" FontSize="13"
-                                           Foreground="#333" Margin="0,0,0,8" />
+                                           Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,8" />
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                                     <Button Content="All" Command="{Binding SelectAllUnitsCommand}"
                                             Padding="8,2" FontSize="11" Margin="0,0,6,0" />
@@ -66,13 +68,14 @@
                                             <DataTemplate>
                                                 <CheckBox IsChecked="{Binding IsSelected}"
                                                           Content="{Binding UnitName}"
+                                                          Foreground="{DynamicResource PrimaryTextBrush}"
                                                           FontSize="12" Margin="0,2" />
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
                                 </ScrollViewer>
                                 <TextBlock Text="{Binding UnitSelectionSummary}"
-                                           FontSize="11" Foreground="#888"
+                                           FontSize="11" Foreground="{DynamicResource MutedTextBrush}"
                                            Margin="0,8,0,0" />
                             </StackPanel>
                         </Border>
@@ -86,26 +89,30 @@
                             Padding="16,8" FontSize="13"
                             FontWeight="SemiBold"
                             Margin="0,0,8,0" />
-<Button Content="Run All Reports"
+                    <Button Content="Run All Reports"
                             Command="{Binding RunAllReportsCommand}"
                             Visibility="{Binding IsAuthenticated, Converter={StaticResource BoolToVisibilityConverter}}"
                             IsEnabled="{Binding IsRunningAll, Converter={StaticResource InverseBoolConverter}}"
                             Padding="16,8" FontSize="13"
                             FontWeight="SemiBold"
-                            Background="#00a794" Foreground="White"
+                            Background="{DynamicResource BrandTealBrush}" Foreground="White"
                             Margin="0,0,8,0" />
                     <Button Content="Logout"
                             Command="{Binding LogoutCommand}"
                             Visibility="{Binding IsAuthenticated, Converter={StaticResource BoolToVisibilityConverter}}"
                             Padding="16,8" FontSize="13"
                             FontWeight="SemiBold"
-                            Background="#e22e12" Foreground="White" />
+                            Background="{DynamicResource BrandRedBrush}" Foreground="White" />
                 </StackPanel>
             </Grid>
         </Border>
 
         <!-- Tab Control -->
-        <TabControl Grid.Row="1" Margin="8">
+        <TabControl Grid.Row="1" Margin="8"
+                    Background="{DynamicResource WindowBackgroundBrush}">
+            <TabItem Header="Dashboard">
+                <views:DashboardView DataContext="{Binding Dashboard}" />
+            </TabItem>
             <TabItem Header="DBS / Disclosures">
                 <views:DbsReportView DataContext="{Binding DbsReport}" />
             </TabItem>
@@ -118,8 +125,30 @@
         </TabControl>
 
         <!-- Status bar -->
-        <Border Grid.Row="2" Background="#F5F5F5" Padding="8,4">
-            <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="#616161" />
+        <Border Grid.Row="2" Background="{DynamicResource MainStatusBarBackgroundBrush}" Padding="8,4">
+            <Grid>
+                <TextBlock Text="{Binding StatusText}" FontSize="11"
+                           Foreground="{DynamicResource TertiaryTextBrush}"
+                           VerticalAlignment="Center" />
+                <ToggleButton IsChecked="{Binding IsDarkMode}"
+                              HorizontalAlignment="Right" VerticalAlignment="Center"
+                              Background="Transparent" BorderThickness="0"
+                              Padding="6,2" Cursor="Hand"
+                              ToolTip="Toggle dark mode">
+                    <TextBlock FontSize="11" Foreground="{DynamicResource MutedTextBrush}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="Dark Mode" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsDarkMode}" Value="True">
+                                        <Setter Property="Text" Value="Light Mode" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </ToggleButton>
+            </Grid>
         </Border>
     </Grid>
 </Window>

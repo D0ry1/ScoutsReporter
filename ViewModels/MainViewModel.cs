@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using ScoutsReporter.Models;
 using ScoutsReporter.Services;
 using ScoutsReporter.Views;
+using System.ComponentModel;
 
 namespace ScoutsReporter.ViewModels;
 
@@ -16,6 +17,8 @@ public partial class MainViewModel : ObservableObject
     private readonly AuthService _auth;
     private readonly ApiService _api;
     private readonly DataCacheService _cache;
+
+    public DataCacheService Cache => _cache;
 
     [ObservableProperty]
     private string _statusText = "Click Login to begin.";
@@ -32,6 +35,9 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isRunningAll;
 
+    [ObservableProperty]
+    private bool _isDarkMode;
+
     // ── Unit picker ──────────────────────────────────────────────
 
     public ObservableCollection<SelectableUnit> AvailableUnits { get; } = new();
@@ -45,6 +51,7 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string _unitSelectionSummary = "";
 
+    public DashboardViewModel Dashboard { get; }
     public DbsReportViewModel DbsReport { get; }
     public TrainingReportViewModel TrainingReport { get; }
     public PermitsReportViewModel PermitsReport { get; }
@@ -63,9 +70,18 @@ public partial class MainViewModel : ObservableObject
         DbsReport = new DbsReportViewModel(_api, _auth, disclosureService, _cache, this);
         TrainingReport = new TrainingReportViewModel(_api, _auth, trainingService, _cache, this);
         PermitsReport = new PermitsReportViewModel(_api, _auth, permitService, _cache, this);
+        Dashboard = new DashboardViewModel(DbsReport, TrainingReport, this);
+
+        IsDarkMode = SettingsService.LoadIsDarkMode();
 
         // Try auto-login from saved token on startup
         _ = TryAutoLoginAsync();
+    }
+
+    partial void OnIsDarkModeChanged(bool value)
+    {
+        ThemeService.ApplyTheme(value);
+        SettingsService.SaveIsDarkMode(value);
     }
 
     private List<UnitInfo> GetSelectedUnits()
@@ -139,6 +155,7 @@ public partial class MainViewModel : ObservableObject
         IsUnitPickerOpen = false;
         UnitSelectionSummary = "";
 
+        Dashboard.ClearDashboard();
         DbsReport.ClearReport();
         TrainingReport.ClearReport();
         PermitsReport.ClearReport();
@@ -223,6 +240,7 @@ public partial class MainViewModel : ObservableObject
         if (e.PropertyName != nameof(SelectableUnit.IsSelected)) return;
 
         _cache.Invalidate();
+        Dashboard.ClearDashboard();
         DbsReport.ClearReport();
         TrainingReport.ClearReport();
         PermitsReport.ClearReport();

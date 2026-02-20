@@ -1,0 +1,390 @@
+<UserControl x:Class="ScoutsReporter.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid TextElement.Foreground="{DynamicResource PrimaryTextBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Row 0 — Toolbar -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="4">
+            <Button Content="Run Dashboard" Command="{Binding RunDashboardCommand}"
+                    IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}"
+                    Padding="16,8" Background="{DynamicResource BrandPurpleBrush}" Foreground="White"
+                    FontWeight="SemiBold" FontSize="13" Margin="0,0,12,0" />
+            <TextBlock Text="{Binding ProgressText}" VerticalAlignment="Center"
+                       Foreground="{DynamicResource MutedTextBrush}" FontSize="11" />
+        </StackPanel>
+
+        <!-- Placeholder when no data -->
+        <TextBlock Grid.Row="1"
+                   Text="Click 'Run Dashboard' to generate the compliance overview."
+                   VerticalAlignment="Center" HorizontalAlignment="Center"
+                   FontSize="14" Foreground="{DynamicResource PlaceholderTextBrush}"
+                   Visibility="{Binding HasData, Converter={StaticResource InverseBoolToVisibilityConverter}}" />
+
+        <!-- Row 1 — Dashboard content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                      Visibility="{Binding HasData, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel Margin="16">
+
+                <!-- ═══ Hero Tiles ═══ -->
+                <UniformGrid Columns="3" Margin="0,0,0,20">
+                    <!-- DBS tile -->
+                    <Border Background="{Binding DbsCompliancePercent, Converter={StaticResource PercentToColorConverter}}"
+                            CornerRadius="8" Padding="20,16" Margin="0,0,6,0">
+                        <StackPanel>
+                            <TextBlock Text="DBS / Disclosures" Foreground="White"
+                                       FontSize="12" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding DbsCompliancePercent, StringFormat='{}{0}%'}"
+                                       Foreground="White" FontSize="36" FontWeight="Bold"
+                                       Margin="0,6,0,4" />
+                            <TextBlock Foreground="White" Opacity="0.85" FontSize="11">
+                                <Run Text="{Binding DbsOkCount, Mode=OneWay}" FontWeight="SemiBold" />
+                                <Run Text=" of " />
+                                <Run Text="{Binding DbsTotalCount, Mode=OneWay}" FontWeight="SemiBold" />
+                                <Run Text=" compliant" />
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                    <!-- Safety & Safeguarding tile -->
+                    <Border Background="{Binding SafeguardingCompliancePercent, Converter={StaticResource PercentToColorConverter}}"
+                            CornerRadius="8" Padding="20,16" Margin="3,0,3,0">
+                        <StackPanel>
+                            <TextBlock Text="Safety &amp; Safeguarding" Foreground="White"
+                                       FontSize="12" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding SafeguardingCompliancePercent, StringFormat='{}{0}%'}"
+                                       Foreground="White" FontSize="36" FontWeight="Bold"
+                                       Margin="0,6,0,4" />
+                            <TextBlock Foreground="White" Opacity="0.85" FontSize="11">
+                                <Run Text="{Binding SafeguardingOkCount, Mode=OneWay}" FontWeight="SemiBold" />
+                                <Run Text=" of " />
+                                <Run Text="{Binding SafeguardingTotalCount, Mode=OneWay}" FontWeight="SemiBold" />
+                                <Run Text=" compliant" />
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                    <!-- First Response tile -->
+                    <Border Background="{Binding FirstResponseCompliancePercent, Converter={StaticResource PercentToColorConverter}}"
+                            CornerRadius="8" Padding="20,16" Margin="6,0,0,0">
+                        <StackPanel>
+                            <TextBlock Text="First Response" Foreground="White"
+                                       FontSize="12" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding FirstResponseCompliancePercent, StringFormat='{}{0}%'}"
+                                       Foreground="White" FontSize="36" FontWeight="Bold"
+                                       Margin="0,6,0,4" />
+                            <TextBlock Foreground="White" Opacity="0.85" FontSize="11">
+                                <Run Text="{Binding FirstResponseOkCount, Mode=OneWay}" FontWeight="SemiBold" />
+                                <Run Text=" of " />
+                                <Run Text="{Binding FirstResponseTotalCount, Mode=OneWay}" FontWeight="SemiBold" />
+                                <Run Text=" up to date" />
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <!-- ═══ Per-Unit Breakdown (hidden when single unit) ═══ -->
+                <StackPanel Visibility="{Binding ShowPerUnit, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Margin="0,0,0,20">
+                    <TextBlock Text="Compliance Breakdown" FontSize="18" FontWeight="Bold"
+                               Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,8" />
+                    <ItemsControl ItemsSource="{Binding UnitBreakdowns}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Margin="0,0,0,6" Background="{DynamicResource CardBackgroundBrush}" CornerRadius="6"
+                                        Padding="16,12" BorderThickness="1" BorderBrush="{DynamicResource CardBorderBrush}">
+                                    <StackPanel>
+                                        <!-- Group summary row -->
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <!-- Expand/collapse arrow -->
+                                            <Button Grid.Column="0" Command="{Binding ToggleExpandCommand}"
+                                                    Background="Transparent" BorderThickness="0"
+                                                    Padding="4,0" Margin="0,0,8,0" Cursor="Hand"
+                                                    VerticalAlignment="Center">
+                                                <TextBlock FontSize="11" Foreground="{DynamicResource MutedTextBrush}">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Text" Value="&#x25BA;" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                                                                    <Setter Property="Text" Value="&#x25BC;" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Button>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding UnitName}" FontSize="14"
+                                                           FontWeight="SemiBold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                                <TextBlock FontSize="11" Foreground="{DynamicResource PlaceholderTextBrush}">
+                                                    <Run Text="{Binding MemberCount, Mode=OneWay}" />
+                                                    <Run Text=" members" />
+                                                </TextBlock>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Margin="24,0" VerticalAlignment="Center"
+                                                        HorizontalAlignment="Center" Width="80">
+                                                <TextBlock Text="DBS" FontSize="10" Foreground="{DynamicResource PlaceholderTextBrush}"
+                                                           HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding DbsPercent, StringFormat='{}{0}%'}"
+                                                           FontSize="18" FontWeight="Bold"
+                                                           HorizontalAlignment="Center"
+                                                           Foreground="{Binding DbsPercent, Converter={StaticResource PercentToColorConverter}}" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="3" Margin="24,0" VerticalAlignment="Center"
+                                                        HorizontalAlignment="Center" Width="110">
+                                                <TextBlock Text="Safety &amp; Safeguarding" FontSize="10" Foreground="{DynamicResource PlaceholderTextBrush}"
+                                                           HorizontalAlignment="Center" TextAlignment="Center" />
+                                                <TextBlock Text="{Binding SafeguardingPercent, StringFormat='{}{0}%'}"
+                                                           FontSize="18" FontWeight="Bold"
+                                                           HorizontalAlignment="Center"
+                                                           Foreground="{Binding SafeguardingPercent, Converter={StaticResource PercentToColorConverter}}" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="4" Margin="24,0,0,0" VerticalAlignment="Center"
+                                                        HorizontalAlignment="Center" Width="100">
+                                                <TextBlock Text="First Response" FontSize="10" Foreground="{DynamicResource PlaceholderTextBrush}"
+                                                           HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding FirstResponsePercent, StringFormat='{}{0}%'}"
+                                                           FontSize="18" FontWeight="Bold"
+                                                           HorizontalAlignment="Center"
+                                                           Foreground="{Binding FirstResponsePercent, Converter={StaticResource PercentToColorConverter}}" />
+                                            </StackPanel>
+                                        </Grid>
+                                        <!-- Expanded detail (visible when expanded) -->
+                                        <StackPanel Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                    Margin="24,8,0,0">
+
+                                            <!-- Section drill-down rows -->
+                                            <ItemsControl ItemsSource="{Binding Sections}"
+                                                          Visibility="{Binding HasSections, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Margin="0,0,0,2" Padding="8,6"
+                                                                BorderThickness="0,1,0,0" BorderBrush="{DynamicResource SectionDividerBrush}">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                                                    <TextBlock Text="{Binding TeamName}" FontSize="12"
+                                                                               Foreground="{DynamicResource SecondaryTextBrush}" />
+                                                                    <TextBlock FontSize="12" Foreground="{DynamicResource PlaceholderTextBrush}">
+                                                                        <Run Text=" (" /><Run Text="{Binding MemberCount, Mode=OneWay}" /><Run Text=")" />
+                                                                    </TextBlock>
+                                                                </StackPanel>
+                                                                <TextBlock Grid.Column="1" Margin="24,0"
+                                                                           Text="{Binding DbsPercent, StringFormat='{}{0}%'}"
+                                                                           FontSize="13" FontWeight="SemiBold"
+                                                                           HorizontalAlignment="Center" Width="80"
+                                                                           TextAlignment="Center" VerticalAlignment="Center"
+                                                                           Foreground="{Binding DbsPercent, Converter={StaticResource PercentToColorConverter}}" />
+                                                                <TextBlock Grid.Column="2" Margin="24,0"
+                                                                           Text="{Binding SafeguardingPercent, StringFormat='{}{0}%'}"
+                                                                           FontSize="13" FontWeight="SemiBold"
+                                                                           HorizontalAlignment="Center" Width="110"
+                                                                           TextAlignment="Center" VerticalAlignment="Center"
+                                                                           Foreground="{Binding SafeguardingPercent, Converter={StaticResource PercentToColorConverter}}" />
+                                                                <TextBlock Grid.Column="3" Margin="24,0,0,0"
+                                                                           Text="{Binding FirstResponsePercent, StringFormat='{}{0}%'}"
+                                                                           FontSize="13" FontWeight="SemiBold"
+                                                                           HorizontalAlignment="Center" Width="100"
+                                                                           TextAlignment="Center" VerticalAlignment="Center"
+                                                                           Foreground="{Binding FirstResponsePercent, Converter={StaticResource PercentToColorConverter}}" />
+                                                            </Grid>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+
+                                            <!-- DBS flag tiles for this unit -->
+                                            <TextBlock Text="DBS / Disclosures" FontSize="13" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource SecondaryTextBrush}" Margin="0,12,0,4" />
+                                            <ItemsControl ItemsSource="{Binding DbsFlagTiles}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <UniformGrid Columns="4" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Margin="2" Background="{DynamicResource CardBackgroundSubtleBrush}" CornerRadius="4"
+                                                                BorderThickness="0,2,0,0" BorderBrush="{Binding FlagBrush}"
+                                                                Padding="8,6">
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding Count}" FontSize="16"
+                                                                           FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" />
+                                                                <TextBlock Text="{Binding FlagName}" FontSize="10"
+                                                                           Foreground="{DynamicResource MutedTextBrush}" />
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+
+                                            <!-- DBS attention names for this unit -->
+                                            <ItemsControl ItemsSource="{Binding DbsAttentionGroups}" Margin="0,4,0,0">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Margin="0,0,0,4" BorderThickness="3,0,0,0"
+                                                                BorderBrush="{Binding FlagBrush}"
+                                                                Background="{DynamicResource AttentionGroupBackgroundBrush}" Padding="10,6">
+                                                            <StackPanel>
+                                                                <TextBlock FontSize="11" Margin="0,0,0,2">
+                                                                    <Run Text="{Binding FlagName, Mode=OneWay}" FontWeight="SemiBold" />
+                                                                    <Run Text=" (" /><Run Text="{Binding Count, Mode=OneWay}" /><Run Text=")" />
+                                                                </TextBlock>
+                                                                <TextBlock Text="{Binding Names}" FontSize="10"
+                                                                           Foreground="{DynamicResource TertiaryTextBrush}" TextWrapping="Wrap" />
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+
+                                            <!-- Safety & Safeguarding for this unit -->
+                                            <TextBlock Text="Safety &amp; Safeguarding" FontSize="13" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource SecondaryTextBrush}" Margin="0,12,0,4" />
+                                            <ItemsControl ItemsSource="{Binding SafeguardingBreakdowns}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <UniformGrid Columns="2" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Margin="2" Background="{DynamicResource CardBackgroundSubtleBrush}" CornerRadius="4"
+                                                                Padding="10,8" BorderThickness="1" BorderBrush="{DynamicResource SubtleCardBorderBrush}">
+                                                            <StackPanel>
+                                                                <TextBlock FontSize="11" Foreground="{DynamicResource SecondaryTextBrush}">
+                                                                    <Run Text="{Binding Title, Mode=OneWay}" FontWeight="SemiBold" />
+                                                                    <Run Text=" — " />
+                                                                    <Run Text="{Binding CompliancePercent, Mode=OneWay, StringFormat='{}{0}%'}"
+                                                                         FontWeight="Bold"
+                                                                         Foreground="{Binding CompliancePercent, Converter={StaticResource PercentToColorConverter}}" />
+                                                                </TextBlock>
+                                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                                    <TextBlock FontSize="10" Foreground="{StaticResource StatusOkBrush}" Margin="0,0,8,0">
+                                                                        <Run Text="OK: " /><Run Text="{Binding OkCount, Mode=OneWay}" FontWeight="SemiBold" />
+                                                                    </TextBlock>
+                                                                    <TextBlock FontSize="10" Foreground="{StaticResource StatusDangerBrush}" Margin="0,0,8,0">
+                                                                        <Run Text="Exp: " /><Run Text="{Binding ExpiredCount, Mode=OneWay}" FontWeight="SemiBold" />
+                                                                    </TextBlock>
+                                                                    <TextBlock FontSize="10" Foreground="{StaticResource StatusWarningBrush}" Margin="0,0,8,0">
+                                                                        <Run Text="Soon: " /><Run Text="{Binding ExpiringSoonCount, Mode=OneWay}" FontWeight="SemiBold" />
+                                                                    </TextBlock>
+                                                                    <TextBlock FontSize="10" Foreground="{StaticResource StatusDangerBrush}">
+                                                                        <Run Text="Miss: " /><Run Text="{Binding MissingCount, Mode=OneWay}" FontWeight="SemiBold" />
+                                                                    </TextBlock>
+                                                                </StackPanel>
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+
+                                            <!-- Safeguarding attention names -->
+                                            <ItemsControl ItemsSource="{Binding SafeguardingAttentionGroups}" Margin="0,4,0,0">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Margin="0,0,0,4" BorderThickness="3,0,0,0"
+                                                                BorderBrush="{Binding FlagBrush}"
+                                                                Background="{DynamicResource AttentionGroupBackgroundBrush}" Padding="10,6">
+                                                            <StackPanel>
+                                                                <TextBlock FontSize="11" Margin="0,0,0,2">
+                                                                    <Run Text="{Binding FlagName, Mode=OneWay}" FontWeight="SemiBold" />
+                                                                    <Run Text=" (" /><Run Text="{Binding Count, Mode=OneWay}" /><Run Text=")" />
+                                                                </TextBlock>
+                                                                <TextBlock Text="{Binding Names}" FontSize="10"
+                                                                           Foreground="{DynamicResource TertiaryTextBrush}" TextWrapping="Wrap" />
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+
+                                            <!-- First Response for this unit -->
+                                            <TextBlock Text="First Response" FontSize="13" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource SecondaryTextBrush}" Margin="0,12,0,4" />
+                                            <ItemsControl ItemsSource="{Binding FirstResponseBreakdowns}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Margin="2" Background="{DynamicResource CardBackgroundSubtleBrush}" CornerRadius="4"
+                                                                Padding="10,8" BorderThickness="1" BorderBrush="{DynamicResource SubtleCardBorderBrush}"
+                                                                HorizontalAlignment="Left" MinWidth="200">
+                                                            <StackPanel>
+                                                                <TextBlock FontSize="11" Foreground="{DynamicResource SecondaryTextBrush}">
+                                                                    <Run Text="{Binding CompliancePercent, Mode=OneWay, StringFormat='{}{0}%'}"
+                                                                         FontWeight="Bold"
+                                                                         Foreground="{Binding CompliancePercent, Converter={StaticResource PercentToColorConverter}}" />
+                                                                    <Run Text=" up to date" />
+                                                                </TextBlock>
+                                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                                    <TextBlock FontSize="10" Foreground="{StaticResource StatusOkBrush}" Margin="0,0,8,0">
+                                                                        <Run Text="OK: " /><Run Text="{Binding OkCount, Mode=OneWay}" FontWeight="SemiBold" />
+                                                                    </TextBlock>
+                                                                    <TextBlock FontSize="10" Foreground="{StaticResource StatusDangerBrush}" Margin="0,0,8,0">
+                                                                        <Run Text="Exp: " /><Run Text="{Binding ExpiredCount, Mode=OneWay}" FontWeight="SemiBold" />
+                                                                    </TextBlock>
+                                                                    <TextBlock FontSize="10" Foreground="{StaticResource StatusWarningBrush}" Margin="0,0,8,0">
+                                                                        <Run Text="Soon: " /><Run Text="{Binding ExpiringSoonCount, Mode=OneWay}" FontWeight="SemiBold" />
+                                                                    </TextBlock>
+                                                                    <TextBlock FontSize="10" Foreground="{StaticResource StatusDangerBrush}">
+                                                                        <Run Text="Miss: " /><Run Text="{Binding MissingCount, Mode=OneWay}" FontWeight="SemiBold" />
+                                                                    </TextBlock>
+                                                                </StackPanel>
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+
+                                            <!-- First Response attention names -->
+                                            <ItemsControl ItemsSource="{Binding FirstResponseAttentionGroups}" Margin="0,4,0,0">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Margin="0,0,0,4" BorderThickness="3,0,0,0"
+                                                                BorderBrush="{Binding FlagBrush}"
+                                                                Background="{DynamicResource AttentionGroupBackgroundBrush}" Padding="10,6">
+                                                            <StackPanel>
+                                                                <TextBlock FontSize="11" Margin="0,0,0,2">
+                                                                    <Run Text="{Binding FlagName, Mode=OneWay}" FontWeight="SemiBold" />
+                                                                    <Run Text=" (" /><Run Text="{Binding Count, Mode=OneWay}" /><Run Text=")" />
+                                                                </TextBlock>
+                                                                <TextBlock Text="{Binding Names}" FontSize="10"
+                                                                           Foreground="{DynamicResource TertiaryTextBrush}" TextWrapping="Wrap" />
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Row 2 — Status bar -->
+        <Border Grid.Row="2" Background="{DynamicResource StatusBarBackgroundBrush}" Padding="8,4" BorderThickness="0,1,0,0"
+                BorderBrush="{DynamicResource StatusBarBorderBrush}">
+            <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="{DynamicResource TertiaryTextBrush}" />
+        </Border>
+    </Grid>
+</UserControl>

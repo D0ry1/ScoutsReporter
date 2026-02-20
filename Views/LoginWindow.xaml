@@ -4,13 +4,14 @@
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         Title="Scouts Login" Height="700" Width="550"
         WindowStartupLocation="CenterOwner"
-        ResizeMode="CanResizeWithGrip">
-    <Grid>
+        ResizeMode="CanResizeWithGrip"
+        Background="{DynamicResource WindowBackgroundBrush}">
+    <Grid TextElement.Foreground="{DynamicResource PrimaryTextBrush}">
         <!-- Loading overlay -->
         <TextBlock x:Name="LoadingText"
                    Text="Loading login page..."
                    HorizontalAlignment="Center" VerticalAlignment="Center"
-                   FontSize="14" Foreground="#616161" />
+                   FontSize="14" Foreground="{DynamicResource TertiaryTextBrush}" />
 
         <!-- WebView2 browser -->
         <wv2:WebView2 x:Name="LoginBrowser"

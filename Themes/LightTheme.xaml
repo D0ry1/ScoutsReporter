@@ -1,0 +1,36 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ═══ Theme-dependent brushes ═══ -->
+    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="White" />
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="White" />
+    <SolidColorBrush x:Key="CardBackgroundSubtleBrush" Color="#F9F9F9" />
+    <SolidColorBrush x:Key="AttentionGroupBackgroundBrush" Color="#FAFAFA" />
+    <SolidColorBrush x:Key="DataGridAlternatingRowBrush" Color="#FAFAFA" />
+    <SolidColorBrush x:Key="StatusBarBackgroundBrush" Color="#F3E5F5" />
+    <SolidColorBrush x:Key="StatusBarBorderBrush" Color="#E1BEE7" />
+    <SolidColorBrush x:Key="MainStatusBarBackgroundBrush" Color="#F5F5F5" />
+    <SolidColorBrush x:Key="PopupBackgroundBrush" Color="White" />
+    <SolidColorBrush x:Key="DialogInfoBoxBackgroundBrush" Color="#F0F4FF" />
+    <SolidColorBrush x:Key="DialogInfoBoxBorderBrush" Color="#B0C4DE" />
+    <SolidColorBrush x:Key="CardBorderBrush" Color="#E0E0E0" />
+    <SolidColorBrush x:Key="SubtleCardBorderBrush" Color="#E8E8E8" />
+    <SolidColorBrush x:Key="SectionDividerBrush" Color="#F0F0F0" />
+    <SolidColorBrush x:Key="PrimaryTextBrush" Color="Black" />
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="#555555" />
+    <SolidColorBrush x:Key="TertiaryTextBrush" Color="#616161" />
+    <SolidColorBrush x:Key="MutedTextBrush" Color="#757575" />
+    <SolidColorBrush x:Key="PlaceholderTextBrush" Color="#9E9E9E" />
+    <SolidColorBrush x:Key="ErrorTextBrush" Color="#DC3545" />
+
+    <!-- ═══ Shared brushes (same in both themes) ═══ -->
+    <SolidColorBrush x:Key="BrandPurpleBrush" Color="#7413dc" />
+    <SolidColorBrush x:Key="BrandHeaderSubtitleBrush" Color="#D1C4E9" />
+    <SolidColorBrush x:Key="BrandTealBrush" Color="#00a794" />
+    <SolidColorBrush x:Key="BrandRedBrush" Color="#e22e12" />
+    <SolidColorBrush x:Key="StatusOkBrush" Color="#23a950" />
+    <SolidColorBrush x:Key="StatusDangerBrush" Color="#e22e12" />
+    <SolidColorBrush x:Key="StatusWarningBrush" Color="#FF9800" />
+    <SolidColorBrush x:Key="StatusNavyBrush" Color="#003982" />
+
+</ResourceDictionary>

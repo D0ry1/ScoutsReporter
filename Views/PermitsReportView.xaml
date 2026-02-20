@@ -1,7 +1,7 @@
 <UserControl x:Class="ScoutsReporter.Views.PermitsReportView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid>
+    <Grid TextElement.Foreground="{DynamicResource PrimaryTextBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -24,23 +24,63 @@
                     Padding="12,6" Margin="0,0,16,0" />
             <CheckBox Content="Hide members with no permits"
                       IsChecked="{Binding HideNoPermits}"
+                      Foreground="{DynamicResource PrimaryTextBrush}"
                       VerticalAlignment="Center" Margin="0,0,16,0" />
             <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                      Width="200" Padding="4,4" VerticalAlignment="Center"
                      Margin="0,0,8,0" />
             <TextBlock Text="Search" VerticalAlignment="Center"
-                       Foreground="#9E9E9E" FontSize="11" Margin="0,0,16,0" />
+                       Foreground="{DynamicResource PlaceholderTextBrush}" FontSize="11" Margin="0,0,16,0" />
             <TextBlock Text="{Binding ProgressText}" VerticalAlignment="Center"
-                       Foreground="#757575" FontSize="11" />
+                       Foreground="{DynamicResource MutedTextBrush}" FontSize="11" />
         </StackPanel>
 
         <!-- DataGrid -->
         <DataGrid Grid.Row="1" ItemsSource="{Binding ReportRows}"
                   AutoGenerateColumns="False" IsReadOnly="True"
                   CanUserSortColumns="True" CanUserReorderColumns="True"
-                  GridLinesVisibility="Horizontal" AlternatingRowBackground="#FAFAFA"
+                  GridLinesVisibility="Horizontal"
                   HeadersVisibility="Column" SelectionMode="Single"
-                  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                  Background="{DynamicResource WindowBackgroundBrush}"
+                  Foreground="{DynamicResource PrimaryTextBrush}"
+                  RowBackground="{DynamicResource WindowBackgroundBrush}"
+                  AlternatingRowBackground="{DynamicResource DataGridAlternatingRowBrush}"
+                  BorderBrush="{DynamicResource CardBorderBrush}"
+                  HorizontalGridLinesBrush="{DynamicResource SectionDividerBrush}">
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="Background" Value="{DynamicResource CardBackgroundSubtleBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource CardBorderBrush}" />
+                    <Setter Property="BorderThickness" Value="0,0,1,1" />
+                    <Setter Property="Padding" Value="6,4" />
+                    <Setter Property="FontWeight" Value="SemiBold" />
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource BrandPurpleBrush}" />
+                            <Setter Property="Foreground" Value="White" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.CellStyle>
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Background" Value="{DynamicResource WindowBackgroundBrush}" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource BrandPurpleBrush}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="160" />
                 <DataGridTextColumn Header="Total Permits" Binding="{Binding TotalPermits}" Width="90" />
@@ -62,16 +102,16 @@
                     <ItemsControl ItemsSource="{Binding Permits}" Margin="20,4">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="4,2" Margin="0,1">
+                                <Border BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="0,0,0,1" Padding="4,2" Margin="0,1">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding Name}" Width="160" FontWeight="SemiBold" />
-                                        <TextBlock Text="{Binding Type}" Width="120" Foreground="#616161" />
+                                        <TextBlock Text="{Binding Type}" Width="120" Foreground="{DynamicResource TertiaryTextBrush}" />
                                         <TextBlock Text="{Binding Status}" Width="120" />
                                         <TextBlock Text="{Binding Issued}" Width="90" />
                                         <TextBlock Text="{Binding Expiry}" Width="90" />
                                         <TextBlock Text="{Binding Warning}" Width="160"
                                                    Foreground="{Binding Flag, Converter={StaticResource FlagToColorConverter}}" />
-                                        <TextBlock Text="{Binding Restriction}" Width="200" Foreground="#757575"
+                                        <TextBlock Text="{Binding Restriction}" Width="200" Foreground="{DynamicResource MutedTextBrush}"
                                                    TextTrimming="CharacterEllipsis" />
                                     </StackPanel>
                                 </Border>
@@ -83,18 +123,18 @@
         </DataGrid>
 
         <!-- Summary bar -->
-        <Border Grid.Row="2" Background="#F3E5F5" Padding="8,4">
+        <Border Grid.Row="2" Background="{DynamicResource StatusBarBackgroundBrush}" Padding="8,4">
             <StackPanel Orientation="Horizontal">
                 <TextBlock FontSize="12">
                     <Run Text="Total: " FontWeight="Bold" />
                     <Run Text="{Binding TotalMembers, Mode=OneWay}" />
                     <Run Text="  |  With Permits: " />
-                    <Run Text="{Binding WithPermits, Mode=OneWay}" Foreground="#23a950" />
+                    <Run Text="{Binding WithPermits, Mode=OneWay}" Foreground="{StaticResource StatusOkBrush}" />
                     <Run Text="  |  Need Attention: " />
-                    <Run Text="{Binding AttentionCount, Mode=OneWay}" Foreground="#e22e12" />
+                    <Run Text="{Binding AttentionCount, Mode=OneWay}" Foreground="{StaticResource StatusDangerBrush}" />
                 </TextBlock>
                 <TextBlock Text="{Binding StatusText}" Margin="24,0,0,0"
-                           Foreground="#616161" FontSize="11" VerticalAlignment="Center" />
+                           Foreground="{DynamicResource TertiaryTextBrush}" FontSize="11" VerticalAlignment="Center" />
             </StackPanel>
         </Border>
     </Grid>

@@ -6,8 +6,8 @@ namespace ScoutsReporter.Views;
 
 public partial class PasswordDialog : Window
 {
-    private static readonly Brush MetBrush = new SolidColorBrush(Color.FromRgb(40, 167, 69));
-    private static readonly Brush UnmetBrush = new SolidColorBrush(Color.FromRgb(102, 102, 102));
+    private static Brush MetBrush => FindBrush("StatusOkBrush", new SolidColorBrush(Color.FromRgb(40, 167, 69)));
+    private static Brush UnmetBrush => FindBrush("PlaceholderTextBrush", new SolidColorBrush(Color.FromRgb(102, 102, 102)));
 
     public string? Password { get; private set; }
 
@@ -82,5 +82,12 @@ public partial class PasswordDialog : Window
         Password = pw;
         DialogResult = true;
         Close();
+    }
+
+    private static Brush FindBrush(string key, Brush fallback)
+    {
+        if (Application.Current?.TryFindResource(key) is Brush brush)
+            return brush;
+        return fallback;
     }
 }

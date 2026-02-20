@@ -50,6 +50,8 @@ public partial class DbsReportViewModel : ObservableObject
 
     private List<DbsReportRow> _allRows = new();
 
+    public IReadOnlyList<DbsReportRow> AllRows => _allRows;
+
     public void ClearReport()
     {
         ReportRows.Clear();
