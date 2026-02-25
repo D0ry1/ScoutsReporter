@@ -121,8 +121,11 @@ public class TrainingService
                     byTitle[title] = r;
             }
 
-            bool trusteeOnly = mem.Roles.Count > 0 &&
-                mem.Roles.All(role => role.Contains("Trustee Board"));
+            // Helpers-only: exempt from all 3. Any Trustee Board role: need Safety & Safeguarding.
+            bool helpersOnly = mem.Roles.Count > 0 &&
+                mem.Roles.All(role => role.Contains("Helpers"));
+            bool exemptTeamOnly = mem.Roles.Count > 0 &&
+                mem.Roles.All(role => role.Contains("Trustee Board") || role.Contains("Helpers"));
 
             var row = new TrainingReportRow
             {
@@ -155,9 +158,9 @@ public class TrainingService
                 {
                     if (ExpiringTrainings.Contains(title))
                     {
-                        if (title == "First Response" && trusteeOnly)
+                        if (helpersOnly || (title == "First Response" && exemptTeamOnly))
                         {
-                            row.TrainingColumns[title] = "N/A";
+                            row.TrainingColumns[title] = "Exempt";
                         }
                         else
                         {

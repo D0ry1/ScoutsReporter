@@ -105,7 +105,19 @@ public class PermitService
         else if (!string.IsNullOrEmpty(status) &&
                  !status.Equals("Permit Granted", StringComparison.OrdinalIgnoreCase))
         {
-            info.Flag = "IN PROGRESS";
+            if (!string.IsNullOrEmpty(expiryStr) &&
+                DateTime.TryParseExact(expiryStr, "yyyy-MM-dd", CultureInfo.InvariantCulture,
+                    DateTimeStyles.None, out var dt2))
+            {
+                int days2 = (dt2 - DateTime.Now).Days;
+                if (days2 < 0) { info.Warning = $"EXPIRED ({Math.Abs(days2)} days ago)"; info.Flag = "EXPIRED"; }
+                else if (days2 < 180) { info.Warning = $"EXPIRING SOON ({days2} days)"; info.Flag = "EXPIRING SOON"; }
+                else { info.Flag = "IN PROGRESS"; }
+            }
+            else
+            {
+                info.Flag = "IN PROGRESS";
+            }
         }
 
         return info;

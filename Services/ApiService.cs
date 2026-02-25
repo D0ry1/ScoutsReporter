@@ -56,37 +56,57 @@ public class ApiService
         return result;
     }
 
+    public async Task<List<JsonElement>> DataExplorerQueryAllPagesAsync(Dictionary<string, object> bodyTemplate, int pageSize = 500, int maxPages = 50)
+    {
+        var allData = new List<JsonElement>();
+        int pageNo;
+        for (pageNo = 1; pageNo <= maxPages; pageNo++)
+        {
+            bodyTemplate["pageNo"] = pageNo;
+            bodyTemplate["pageSize"] = pageSize;
+            var result = await DataExplorerQueryAsync(bodyTemplate);
+            int count = 0;
+            if (result?.ValueKind == JsonValueKind.Object &&
+                result.Value.TryGetProperty("data", out var data) &&
+                data.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var item in data.EnumerateArray())
+                {
+                    allData.Add(item);
+                    count++;
+                }
+            }
+            if (count < pageSize)
+                break;
+        }
+        return allData;
+    }
+
     public async Task<List<UnitInfo>> FetchUnitsAsync()
     {
-        var result = await DataExplorerQueryAsync(new
+        var body = new Dictionary<string, object>
         {
-            contactId = _auth.ContactId,
-            distinct = true,
-            id = "",
-            isDashboardQuery = false,
-            name = "",
-            query = "",
-            selectFields = new[] { "Id", "UnitName" },
-            table = "ContactHierarchyUnitsView",
-            order = "asc",
-            orderBy = "UnitName",
-            pageNo = 1,
-            pageSize = 500,
-        });
+            ["contactId"] = _auth.ContactId,
+            ["distinct"] = true,
+            ["id"] = "",
+            ["isDashboardQuery"] = false,
+            ["name"] = "",
+            ["query"] = "",
+            ["selectFields"] = new[] { "Id", "UnitName" },
+            ["table"] = "ContactHierarchyUnitsView",
+            ["order"] = "asc",
+            ["orderBy"] = "UnitName",
+        };
 
+        var allData = await DataExplorerQueryAllPagesAsync(body);
         var units = new List<UnitInfo>();
-        if (result?.ValueKind == JsonValueKind.Object &&
-            result.Value.TryGetProperty("data", out var data) &&
-            data.ValueKind == JsonValueKind.Array)
+        foreach (var item in allData)
         {
-            foreach (var item in data.EnumerateArray())
+            units.Add(new UnitInfo
             {
-                units.Add(new UnitInfo
-                {
-                    Id = item.GetProp("id"),
-                    UnitName = item.GetProp("unitName"),
-                });
-            }
+                Id = item.GetProp("id"),
+                UnitName = item.GetProp("unitName"),
+            });
         }
         return units;
     }
@@ -129,53 +149,47 @@ public class ApiService
         var members = new Dictionary<string, Member>();
         foreach (var t in teams)
         {
-            var result = await DataExplorerQueryAsync(new
+            var body = new Dictionary<string, object>
             {
-                contactId = _auth.ContactId,
-                id = "",
-                name = "",
-                query = $"teamid='{t.TeamId}' AND unitid ='{t.UnitId}'",
-                table = "TeamMembersView",
-                selectFields = new[] { "Id", "FullName", "Firstname", "Lastname",
+                ["contactId"] = _auth.ContactId,
+                ["id"] = "",
+                ["name"] = "",
+                ["query"] = $"teamid='{t.TeamId}' AND unitid ='{t.UnitId}'",
+                ["table"] = "TeamMembersView",
+                ["selectFields"] = new[] { "Id", "FullName", "Firstname", "Lastname",
                     "RoleStatusName", "Role", "Unitname", "ContactMembershipId" },
-                distinct = true,
-                isDashboardQuery = false,
-                pageNo = 1,
-                pageSize = 500,
-            });
+                ["distinct"] = true,
+                ["isDashboardQuery"] = false,
+            };
 
-            if (result?.ValueKind == JsonValueKind.Object &&
-                result.Value.TryGetProperty("data", out var data) &&
-                data.ValueKind == JsonValueKind.Array)
+            var allData = await DataExplorerQueryAllPagesAsync(body);
+            int count = 0;
+            foreach (var m in allData)
             {
-                int count = 0;
-                foreach (var m in data.EnumerateArray())
-                {
-                    var cid = m.GetProp("Id");
-                    if (string.IsNullOrEmpty(cid)) continue;
+                var cid = m.GetProp("Id");
+                if (string.IsNullOrEmpty(cid)) continue;
 
-                    if (!members.ContainsKey(cid))
+                if (!members.ContainsKey(cid))
+                {
+                    members[cid] = new Member
                     {
-                        members[cid] = new Member
-                        {
-                            ContactId = cid,
-                            FirstName = m.GetProp("Firstname").Trim(),
-                            LastName = m.GetProp("Lastname").Trim(),
-                            FullName = m.GetProp("FullName").Trim(),
-                        };
-                    }
-                    var unitName = string.IsNullOrEmpty(m.GetProp("UnitName")) ? t.UnitName : m.GetProp("UnitName");
-                    members[cid].UnitNames.Add(unitName);
-                    if (!members[cid].UnitTeams.ContainsKey(unitName))
-                        members[cid].UnitTeams[unitName] = new HashSet<string>();
-                    members[cid].UnitTeams[unitName].Add(t.TeamName);
-                    var roleStr = $"{m.GetProp("Role")} ({m.GetProp("RoleStatusName")}) - {t.TeamName} @ {unitName}";
-                    if (!members[cid].Roles.Contains(roleStr))
-                        members[cid].Roles.Add(roleStr);
-                    count++;
+                        ContactId = cid,
+                        FirstName = m.GetProp("Firstname").Trim(),
+                        LastName = m.GetProp("Lastname").Trim(),
+                        FullName = m.GetProp("FullName").Trim(),
+                    };
                 }
-                progress?.Report($"{t.TeamName} @ {t.UnitName}: {count} members");
+                var unitName = string.IsNullOrEmpty(m.GetProp("UnitName")) ? t.UnitName : m.GetProp("UnitName");
+                members[cid].UnitNames.Add(unitName);
+                if (!members[cid].UnitTeams.ContainsKey(unitName))
+                    members[cid].UnitTeams[unitName] = new HashSet<string>();
+                members[cid].UnitTeams[unitName].Add(t.TeamName);
+                var roleStr = $"{m.GetProp("Role")} ({m.GetProp("RoleStatusName")}) - {t.TeamName} @ {unitName}";
+                if (!members[cid].Roles.Contains(roleStr))
+                    members[cid].Roles.Add(roleStr);
+                count++;
             }
+            progress?.Report($"{t.TeamName} @ {t.UnitName}: {count} members");
             await Task.Delay(300);
         }
         return members;
@@ -185,55 +199,50 @@ public class ApiService
 
     public async Task<(Dictionary<string, OnboardingInfo> byMn, List<JsonElement> allActions)> FetchOnboardingActionsAsync()
     {
-        var result = await DataExplorerQueryAsync(new
+        var body = new Dictionary<string, object>
         {
-            contactId = _auth.ContactId,
-            id = "",
-            name = "",
-            query = "",
-            table = "InProgressActionDashboardView",
-            selectFields = new[] { "MembershipNumber", "LastName", "PreferredName", "CategoryKey",
+            ["contactId"] = _auth.ContactId,
+            ["id"] = "",
+            ["name"] = "",
+            ["query"] = "",
+            ["table"] = "InProgressActionDashboardView",
+            ["selectFields"] = new[] { "MembershipNumber", "LastName", "PreferredName", "CategoryKey",
                 "OnBoardingActionStatus", "Status", "Role", "RoleStatusName",
                 "Team", "unitName", "EmailAddress" },
-            distinct = true,
-            isDashboardQuery = false,
-            pageNo = 1,
-            pageSize = 500,
-        });
+            ["distinct"] = true,
+            ["isDashboardQuery"] = false,
+        };
+
+        var allData = await DataExplorerQueryAllPagesAsync(body);
 
         var byMn = new Dictionary<string, OnboardingInfo>();
         var allActions = new List<JsonElement>();
 
-        if (result?.ValueKind == JsonValueKind.Object &&
-            result.Value.TryGetProperty("data", out var data) &&
-            data.ValueKind == JsonValueKind.Array)
+        foreach (var a in allData)
         {
-            foreach (var a in data.EnumerateArray())
-            {
-                allActions.Add(a);
-                var mn = a.GetProp("Membership number");
-                if (string.IsNullOrEmpty(mn)) continue;
+            allActions.Add(a);
+            var mn = a.GetProp("Membership number");
+            if (string.IsNullOrEmpty(mn)) continue;
 
-                if (!byMn.ContainsKey(mn))
+            if (!byMn.ContainsKey(mn))
+            {
+                byMn[mn] = new OnboardingInfo
                 {
-                    byMn[mn] = new OnboardingInfo
-                    {
-                        FirstName = a.GetProp("First name").Trim(),
-                        LastName = a.GetProp("Last name").Trim(),
-                        Email = a.GetProp("Communication email").Trim(),
-                    };
-                }
-                var cat = a.GetProp("Category key");
-                var status = a.GetProp("On boarding action status");
-                if (!byMn[mn].Actions.ContainsKey(cat))
-                    byMn[mn].Actions[cat] = new List<string>();
-                byMn[mn].Actions[cat].Add(status);
-                if (cat == "managerDisclosureCheck")
-                    byMn[mn].DbsStatuses.Add(status);
-                var email = a.GetProp("Communication email").Trim();
-                if (!string.IsNullOrEmpty(email) && string.IsNullOrEmpty(byMn[mn].Email))
-                    byMn[mn].Email = email;
+                    FirstName = a.GetProp("First name").Trim(),
+                    LastName = a.GetProp("Last name").Trim(),
+                    Email = a.GetProp("Communication email").Trim(),
+                };
             }
+            var cat = a.GetProp("Category key");
+            var status = a.GetProp("On boarding action status");
+            if (!byMn[mn].Actions.ContainsKey(cat))
+                byMn[mn].Actions[cat] = new List<string>();
+            byMn[mn].Actions[cat].Add(status);
+            if (cat == "managerDisclosureCheck")
+                byMn[mn].DbsStatuses.Add(status);
+            var email = a.GetProp("Communication email").Trim();
+            if (!string.IsNullOrEmpty(email) && string.IsNullOrEmpty(byMn[mn].Email))
+                byMn[mn].Email = email;
         }
         return (byMn, allActions);
     }

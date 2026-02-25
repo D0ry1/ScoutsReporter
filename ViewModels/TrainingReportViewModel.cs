@@ -121,13 +121,16 @@ public partial class TrainingReportViewModel : ObservableObject
             var dt = new DataTable();
             dt.Columns.Add("Name", typeof(string));
             dt.Columns.Add("Total Trainings", typeof(int));
+            var lastExpiring = sortedTitles.Where(ExpiringTrainings.Contains).LastOrDefault();
             foreach (var title in sortedTitles)
             {
                 dt.Columns.Add(title, typeof(string));
                 if (ExpiringTrainings.Contains(title))
                     dt.Columns.Add($"{title} Warning", typeof(string));
+                // Insert Flag right after the last expiring training
+                if (title == lastExpiring)
+                    dt.Columns.Add("Flag", typeof(string));
             }
-            dt.Columns.Add("Flag", typeof(string));
             dt.Columns.Add("Roles", typeof(string));
 
             foreach (var row in report)

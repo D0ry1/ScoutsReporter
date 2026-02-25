@@ -41,14 +41,16 @@ public static class CsvExportService
         var expiringTrainings = new HashSet<string> { "First Response", "Safeguarding", "Safety" };
         var sb = new StringBuilder();
 
+        var lastExpiring = sortedTitles.Where(expiringTrainings.Contains).LastOrDefault();
         var columns = new List<string> { "Name", "Total Trainings" };
         foreach (var title in sortedTitles)
         {
             columns.Add(title);
             if (expiringTrainings.Contains(title))
                 columns.Add($"{title} Warning");
+            if (title == lastExpiring)
+                columns.Add("Flag");
         }
-        columns.Add("Flag");
         columns.Add("Roles");
 
         sb.AppendLine(string.Join(",", columns.Select(Escape)));
@@ -61,8 +63,9 @@ public static class CsvExportService
                 vals.Add(r.TrainingColumns.GetValueOrDefault(title, ""));
                 if (expiringTrainings.Contains(title))
                     vals.Add(r.TrainingColumns.GetValueOrDefault($"{title} Warning", ""));
+                if (title == lastExpiring)
+                    vals.Add(r.Flag);
             }
-            vals.Add(r.Flag);
             vals.Add(r.Roles);
             sb.AppendLine(string.Join(",", vals.Select(Escape)));
         }

@@ -127,11 +127,25 @@ public partial class DashboardViewModel : ObservableObject
 
         try
         {
-            ProgressText = "Running DBS report...";
-            await _dbsReport.RunReportCommand.ExecuteAsync(null);
+            if (_dbsReport.AllRows.Count == 0)
+            {
+                ProgressText = "Running DBS report...";
+                await _dbsReport.RunReportCommand.ExecuteAsync(null);
+            }
+            else
+            {
+                ProgressText = "Using existing DBS data...";
+            }
 
-            ProgressText = "Running Training report...";
-            await _trainingReport.RunReportCommand.ExecuteAsync(null);
+            if (_trainingReport.ReportRowsReadOnly.Count == 0)
+            {
+                ProgressText = "Running Training report...";
+                await _trainingReport.RunReportCommand.ExecuteAsync(null);
+            }
+            else
+            {
+                ProgressText = "Using existing Training data...";
+            }
 
             ProgressText = "Aggregating results...";
             AggregateResults();
