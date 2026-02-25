@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Windows;
@@ -41,6 +40,8 @@ public partial class MainViewModel : ObservableObject
 
     // ── Update banner ────────────────────────────────────────────
 
+    private readonly UpdateService _updateService = new();
+
     [ObservableProperty]
     private bool _isUpdateAvailable;
 
@@ -48,7 +49,10 @@ public partial class MainViewModel : ObservableObject
     private string _updateVersion = "";
 
     [ObservableProperty]
-    private string _updateReleaseUrl = "";
+    private string _updateBannerText = "";
+
+    [ObservableProperty]
+    private bool _isInstallingUpdate;
 
     // ── Unit picker ──────────────────────────────────────────────
 
@@ -267,10 +271,28 @@ public partial class MainViewModel : ObservableObject
     // ── Update commands ─────────────────────────────────────────
 
     [RelayCommand]
-    private void OpenUpdatePage()
+    private async Task InstallUpdateAsync()
     {
-        if (!string.IsNullOrEmpty(UpdateReleaseUrl))
-            Process.Start(new ProcessStartInfo(UpdateReleaseUrl) { UseShellExecute = true });
+        if (IsInstallingUpdate) return;
+
+        IsInstallingUpdate = true;
+        try
+        {
+            UpdateBannerText = "Downloading update...";
+            await _updateService.DownloadUpdatesAsync(percent =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                    UpdateBannerText = $"Downloading update... {percent}%");
+            });
+
+            UpdateBannerText = "Restarting...";
+            _updateService.ApplyAndRestart();
+        }
+        catch (Exception ex)
+        {
+            UpdateBannerText = $"Update failed: {ex.Message}";
+            IsInstallingUpdate = false;
+        }
     }
 
     [RelayCommand]
@@ -282,7 +304,7 @@ public partial class MainViewModel : ObservableObject
 
     private async Task CheckForUpdateAsync()
     {
-        var info = await UpdateService.CheckForUpdateAsync();
+        var info = await _updateService.CheckForUpdateAsync();
         if (info == null)
             return;
 
@@ -291,7 +313,7 @@ public partial class MainViewModel : ObservableObject
             return;
 
         UpdateVersion = info.NewVersion;
-        UpdateReleaseUrl = info.ReleaseUrl;
+        UpdateBannerText = $"A new version v{info.NewVersion} is available!";
         IsUpdateAvailable = true;
     }
 

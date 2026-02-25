@@ -1,56 +1,54 @@
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Reflection;
-using System.Text.Json;
+using Velopack;
+using Velopack.Sources;
 
 namespace ScoutsReporter.Services;
 
-public record UpdateInfo(string NewVersion, string ReleaseUrl, string ReleaseNotes);
+public record AppUpdateInfo(string NewVersion, string ReleaseNotes);
 
-public static class UpdateService
+public class UpdateService
 {
-    private static readonly HttpClient _http = CreateHttpClient();
+    private readonly UpdateManager _um;
+    private Velopack.UpdateInfo? _velopackUpdate;
 
-    private static HttpClient CreateHttpClient()
+    public UpdateService()
     {
-        var client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
-        client.DefaultRequestHeaders.UserAgent.Add(
-            new ProductInfoHeaderValue("ScoutsReporter", Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "0.0.0"));
-        return client;
+        _um = new UpdateManager(
+            new GithubSource("https://github.com/D0ry1/ScoutsReporter", null, false));
     }
 
-    public static async Task<UpdateInfo?> CheckForUpdateAsync()
+    public bool IsInstalled => _um.IsInstalled;
+
+    public async Task<AppUpdateInfo?> CheckForUpdateAsync()
     {
+        if (!_um.IsInstalled)
+            return null;
+
         try
         {
-            var json = await _http.GetStringAsync(
-                "https://api.github.com/repos/D0ry1/ScoutsReporter/releases/latest");
-
-            using var doc = JsonDocument.Parse(json);
-            var root = doc.RootElement;
-
-            var tagName = root.GetProperty("tag_name").GetString();
-            if (string.IsNullOrWhiteSpace(tagName))
+            _velopackUpdate = await _um.CheckForUpdatesAsync();
+            if (_velopackUpdate == null)
                 return null;
 
-            var versionString = tagName.TrimStart('v', 'V');
-            if (!Version.TryParse(versionString, out var remoteVersion))
-                return null;
-
-            var localVersion = Assembly.GetExecutingAssembly().GetName().Version;
-            if (localVersion == null || remoteVersion <= localVersion)
-                return null;
-
-            var releaseUrl = root.GetProperty("html_url").GetString() ?? "";
-            var releaseNotes = root.TryGetProperty("body", out var bodyProp)
-                ? bodyProp.GetString() ?? ""
-                : "";
-
-            return new UpdateInfo(versionString, releaseUrl, releaseNotes);
+            return new AppUpdateInfo(
+                _velopackUpdate.TargetFullRelease.Version.ToString(),
+                _velopackUpdate.TargetFullRelease.NotesMarkdown ?? "");
         }
         catch
         {
             return null;
         }
+    }
+
+    public async Task DownloadUpdatesAsync(Action<int>? progress = null)
+    {
+        if (_velopackUpdate == null)
+            throw new InvalidOperationException("No update available. Call CheckForUpdateAsync first.");
+
+        await _um.DownloadUpdatesAsync(_velopackUpdate, progress);
+    }
+
+    public void ApplyAndRestart()
+    {
+        _um.ApplyUpdatesAndRestart(null);
     }
 }
