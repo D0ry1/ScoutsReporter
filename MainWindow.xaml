@@ -23,8 +23,13 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0">
-                    <TextBlock Text="Scouts Reporter" FontSize="20" FontWeight="Bold"
-                               Foreground="White" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Scouts Reporter" FontSize="20" FontWeight="Bold"
+                                   Foreground="White" />
+                        <TextBlock Text="{Binding AppVersion, StringFormat=' v{0}'}" FontSize="12"
+                                   Foreground="{DynamicResource BrandHeaderSubtitleBrush}"
+                                   VerticalAlignment="Bottom" Margin="0,0,0,2" />
+                    </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Foreground="{DynamicResource BrandHeaderSubtitleBrush}" FontSize="12">
                             <Run Text="{Binding GroupName, Mode=OneWay, FallbackValue=''}" />

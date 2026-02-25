@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,6 +14,8 @@ namespace ScoutsReporter.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
+    public string AppVersion { get; } = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "0.0.0";
+
     private readonly HttpClient _http;
     private readonly AuthService _auth;
     private readonly ApiService _api;
