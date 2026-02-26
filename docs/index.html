@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scouts Reporter — Compliance Reports for Scout Leaders</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1a1a2e;
+            background: #fafafa;
+            line-height: 1.6;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: #7413dc;
+            color: #fff;
+            text-align: center;
+            padding: 3rem 1.5rem 2rem;
+        }
+        .header h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            margin-bottom: .4rem;
+        }
+        .header p {
+            font-size: 1.15rem;
+            opacity: .9;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        /* ── Download bar ── */
+        .download-bar {
+            background: #5e0fb5;
+            text-align: center;
+            padding: 1.5rem 1rem;
+        }
+        .download-btn {
+            display: inline-block;
+            background: #fff;
+            color: #7413dc;
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: .85rem 2.4rem;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: transform .15s, box-shadow .15s;
+            box-shadow: 0 2px 8px rgba(0,0,0,.18);
+        }
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,.25);
+        }
+        .download-meta {
+            color: rgba(255,255,255,.8);
+            font-size: .85rem;
+            margin-top: .6rem;
+        }
+        .download-meta span {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* ── Container ── */
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* ── Screenshot ── */
+        .screenshot-section {
+            text-align: center;
+            padding: 2.5rem 0 1rem;
+        }
+        .screenshot-section img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 24px rgba(0,0,0,.12);
+        }
+
+        /* ── Features ── */
+        .features {
+            padding: 2.5rem 0;
+        }
+        .features h2 {
+            text-align: center;
+            font-size: 1.6rem;
+            margin-bottom: 1.8rem;
+            color: #7413dc;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 1.5rem;
+        }
+        .feature-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 6px rgba(0,0,0,.06);
+        }
+        .feature-card h3 {
+            font-size: 1.05rem;
+            margin-bottom: .4rem;
+            color: #7413dc;
+        }
+        .feature-card p {
+            font-size: .92rem;
+            color: #444;
+        }
+
+        /* ── How it works ── */
+        .how {
+            padding: 2rem 0 2.5rem;
+        }
+        .how h2 {
+            text-align: center;
+            font-size: 1.6rem;
+            margin-bottom: 1.5rem;
+            color: #7413dc;
+        }
+        .steps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            justify-content: center;
+        }
+        .step {
+            background: #fff;
+            border-radius: 10px;
+            padding: 1.3rem 1.5rem;
+            flex: 1 1 220px;
+            max-width: 260px;
+            text-align: center;
+            box-shadow: 0 1px 6px rgba(0,0,0,.06);
+        }
+        .step-num {
+            display: inline-block;
+            background: #7413dc;
+            color: #fff;
+            width: 2rem;
+            height: 2rem;
+            line-height: 2rem;
+            border-radius: 50%;
+            font-weight: 700;
+            margin-bottom: .5rem;
+        }
+        .step h3 {
+            font-size: 1rem;
+            margin-bottom: .3rem;
+        }
+        .step p {
+            font-size: .88rem;
+            color: #555;
+        }
+
+        /* ── Note ── */
+        .note {
+            background: #f0e6fa;
+            border-left: 4px solid #7413dc;
+            border-radius: 6px;
+            padding: 1rem 1.3rem;
+            margin: 0 0 2.5rem;
+            font-size: .92rem;
+            color: #3a1a5e;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            background: #1a1a2e;
+            color: rgba(255,255,255,.65);
+            text-align: center;
+            padding: 1.5rem 1rem;
+            font-size: .82rem;
+        }
+        .footer a {
+            color: #c9a0f7;
+            text-decoration: none;
+        }
+        .footer a:hover { text-decoration: underline; }
+
+        /* ── Responsive ── */
+        @media (max-width: 520px) {
+            .header h1 { font-size: 1.7rem; }
+            .header p { font-size: 1rem; }
+            .download-btn { font-size: 1rem; padding: .75rem 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <h1>Scouts Reporter</h1>
+    <p>Compliance reports for Scout leaders, commissioners and group administrators. Check DBS, training and permits — all in one place.</p>
+</div>
+
+<!-- Download -->
+<div class="download-bar">
+    <a class="download-btn"
+       href="https://github.com/D0ry1/ScoutsReporter/releases/latest/download/ScoutsReporter-win-Setup.exe">
+        Download for Windows
+    </a>
+    <div class="download-meta">
+        Windows 10 / 11 &nbsp;&bull;&nbsp; Free &nbsp;&bull;&nbsp;
+        <span id="download-count">&hellip;</span> downloads
+    </div>
+</div>
+
+<!-- Screenshot -->
+<div class="container screenshot-section">
+    <img src="screenshot.png" alt="Scouts Reporter screenshot showing the DBS report view">
+</div>
+
+<!-- Features -->
+<div class="container features">
+    <h2>What it does</h2>
+    <div class="feature-grid">
+        <div class="feature-card">
+            <h3>DBS / Disclosures</h3>
+            <p>See who has a valid DBS check, when it expires, and any outstanding onboarding actions.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Training</h3>
+            <p>Check completion status of mandatory and optional training modules with expiry warnings.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Activity Permits</h3>
+            <p>View all permits held by your volunteers with status, dates and restrictions.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Dashboard</h3>
+            <p>Colour-coded compliance overview at a glance — green, amber and red tiles for every unit.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Export</h3>
+            <p>Save reports as CSV or Excel files, with optional password protection.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Multi-unit</h3>
+            <p>District and county users can pick which units to include and see cross-unit breakdowns.</p>
+        </div>
+    </div>
+</div>
+
+<!-- How it works -->
+<div class="container how">
+    <h2>How to get started</h2>
+    <div class="steps">
+        <div class="step">
+            <div class="step-num">1</div>
+            <h3>Install</h3>
+            <p>Download and run the installer. No additional software needed.</p>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <h3>Log in</h3>
+            <p>Sign in with your normal Scouts membership account.</p>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <h3>Run reports</h3>
+            <p>Pick a report tab and click Run. Results appear in seconds.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Auto-update note -->
+<div class="container">
+    <div class="note">
+        Updates are automatic — the app checks for new versions on startup and lets you know when one is available. You only need to download from this page once.
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+    <p>
+        <a href="https://github.com/D0ry1/ScoutsReporter">View on GitHub</a>
+        &nbsp;&bull;&nbsp;
+        <a href="https://github.com/D0ry1/ScoutsReporter/releases">All releases</a>
+    </p>
+</div>
+
+<!-- Download counter -->
+<script>
+    fetch('https://api.github.com/repos/D0ry1/ScoutsReporter/releases')
+        .then(function (r) { return r.json(); })
+        .then(function (releases) {
+            var total = releases
+                .flatMap(function (r) { return r.assets; })
+                .filter(function (a) { return a.name.includes('Setup') || a.name.endsWith('.zip'); })
+                .reduce(function (sum, a) { return sum + a.download_count; }, 0);
+            document.getElementById('download-count').textContent = total.toLocaleString();
+        })
+        .catch(function () {
+            document.getElementById('download-count').textContent = '';
+        });
+</script>
+
+</body>
+</html>
