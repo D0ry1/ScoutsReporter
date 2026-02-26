@@ -93,11 +93,12 @@ public partial class MainViewModel : ObservableObject
 
         IsDarkMode = SettingsService.LoadIsDarkMode();
 
-        // Try auto-login from saved token on startup
-        _ = TryAutoLoginAsync();
-
-        // Check for updates in the background
-        _ = CheckForUpdateAsync();
+        // Try auto-login from saved token on startup, then check for updates
+        _ = Application.Current.Dispatcher.InvokeAsync(async () =>
+        {
+            await TryAutoLoginAsync();
+            await CheckForUpdateAsync();
+        });
     }
 
     partial void OnIsDarkModeChanged(bool value)
@@ -129,7 +130,6 @@ public partial class MainViewModel : ObservableObject
         }
         catch
         {
-            // Silent refresh failed - user can login manually
             StatusText = "Saved token expired. Please log in.";
         }
     }
