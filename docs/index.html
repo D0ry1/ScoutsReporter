@@ -67,51 +67,58 @@
 
         /* ── Container ── */
         .container {
-            max-width: 860px;
+            max-width: 1100px;
             margin: 0 auto;
             padding: 0 1.5rem;
         }
 
-        /* ── Screenshot ── */
-        .screenshot-section {
-            text-align: center;
+        /* ── Hero (screenshot + features side by side) ── */
+        .hero {
             padding: 2.5rem 0 1rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            align-items: start;
         }
-        .screenshot-section img {
-            max-width: 100%;
+        .hero-screenshot img {
+            width: 100%;
             border-radius: 8px;
             box-shadow: 0 4px 24px rgba(0,0,0,.12);
         }
-
-        /* ── Features ── */
-        .features {
-            padding: 2.5rem 0;
-        }
-        .features h2 {
-            text-align: center;
+        .hero-features h2 {
             font-size: 1.6rem;
-            margin-bottom: 1.8rem;
+            margin-bottom: 1.2rem;
             color: #7413dc;
         }
         .feature-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
         }
         .feature-card {
             background: #fff;
             border-radius: 10px;
-            padding: 1.5rem;
+            padding: 1.2rem;
             box-shadow: 0 1px 6px rgba(0,0,0,.06);
         }
         .feature-card h3 {
-            font-size: 1.05rem;
-            margin-bottom: .4rem;
+            font-size: .95rem;
+            margin-bottom: .3rem;
             color: #7413dc;
         }
         .feature-card p {
-            font-size: .92rem;
+            font-size: .85rem;
             color: #444;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .feature-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
         /* ── How it works ── */
@@ -219,38 +226,38 @@
     </div>
 </div>
 
-<!-- Screenshot -->
-<div class="container screenshot-section">
-    <img src="Newversion.png" alt="Scouts Reporter screenshot showing the DBS report view">
-</div>
-
-<!-- Features -->
-<div class="container features">
-    <h2>What it does</h2>
-    <div class="feature-grid">
-        <div class="feature-card">
-            <h3>DBS / Disclosures</h3>
-            <p>See who has a valid DBS check, when it expires, and any outstanding onboarding actions.</p>
-        </div>
-        <div class="feature-card">
-            <h3>Training</h3>
-            <p>Check completion status of mandatory and optional training modules with expiry warnings.</p>
-        </div>
-        <div class="feature-card">
-            <h3>Activity Permits</h3>
-            <p>View all permits held by your volunteers with status, dates and restrictions.</p>
-        </div>
-        <div class="feature-card">
-            <h3>Dashboard</h3>
-            <p>Colour-coded compliance overview at a glance — green, amber and red tiles for every unit.</p>
-        </div>
-        <div class="feature-card">
-            <h3>Export</h3>
-            <p>Save reports as CSV or Excel files, with optional password protection.</p>
-        </div>
-        <div class="feature-card">
-            <h3>Multi-unit</h3>
-            <p>District and county users can pick which units to include and see cross-unit breakdowns.</p>
+<!-- Screenshot + Features side by side -->
+<div class="container hero">
+    <div class="hero-screenshot">
+        <img src="Newversion.png" alt="Scouts Reporter screenshot showing the DBS report view">
+    </div>
+    <div class="hero-features">
+        <h2>What it does</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>DBS / Disclosures</h3>
+                <p>See who has a valid DBS check, when it expires, and any outstanding onboarding actions.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Training</h3>
+                <p>Check completion status of mandatory and optional training modules with expiry warnings.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Activity Permits</h3>
+                <p>View all permits held by your volunteers with status, dates and restrictions.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Dashboard</h3>
+                <p>Colour-coded compliance overview at a glance — green, amber and red tiles for every unit.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Export</h3>
+                <p>Save reports as CSV or Excel files, with optional password protection.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Multi-unit</h3>
+                <p>District and county users can pick which units to include and see cross-unit breakdowns.</p>
+            </div>
         </div>
     </div>
 </div>
