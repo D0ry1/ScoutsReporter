@@ -39,13 +39,26 @@
             text-align: center;
             padding: 1.5rem 1rem;
         }
+        .download-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+        }
+        .download-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
         .download-btn {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
             background: #fff;
             color: #7413dc;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 700;
-            padding: .85rem 2.4rem;
+            padding: .85rem 2rem;
             border-radius: 8px;
             text-decoration: none;
             transition: transform .15s, box-shadow .15s;
@@ -54,6 +67,11 @@
         .download-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 16px rgba(0,0,0,.25);
+        }
+        .download-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #7413dc;
         }
         .download-meta {
             color: rgba(255,255,255,.8);
@@ -209,20 +227,38 @@
 
 <!-- Download -->
 <div class="download-bar">
-    <a class="download-btn"
-       href="https://github.com/D0ry1/ScoutsReporter/releases/latest/download/ScoutsReporter-win-Setup.exe">
-        Download for Windows
-    </a>
-    <div class="download-meta">
-        Windows 10 / 11 &nbsp;&bull;&nbsp; Free &nbsp;&bull;&nbsp;
-        <span id="download-count">&hellip;</span> downloads
+    <div class="download-buttons">
+        <div class="download-col">
+            <a class="download-btn"
+               href="https://github.com/D0ry1/ScoutsReporter/releases/latest/download/ScoutsReporter-win-Setup.exe">
+                <svg viewBox="0 0 24 24"><path d="M0 3.5L9.9 2.1v9.6H0V3.5zm0 17L9.9 21.9v-9.6H0v8.2zM11 1.9L24 0v11.7H11V1.9zM11 12.3H24V24L11 22.1v-9.8z"/></svg>
+                Download for Windows
+            </a>
+            <div class="download-meta">
+                Windows 10 / 11 &nbsp;&bull;&nbsp;
+                <span id="win-count">&hellip;</span> downloads
+            </div>
+        </div>
+        <div class="download-col">
+            <a class="download-btn"
+               href="https://github.com/D0ry1/ScoutsReporterMacVersion/releases/latest/download/ScoutsReporter-1.1.0.dmg">
+                <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                Download for Mac
+            </a>
+            <div class="download-meta">
+                macOS 14 Sonoma+ &nbsp;&bull;&nbsp;
+                <span id="mac-count">&hellip;</span> downloads
+            </div>
+        </div>
     </div>
+    <div class="download-meta" style="margin-top: .8rem;">Free &nbsp;&bull;&nbsp; No account required to download</div>
 </div>
 
 <!-- Auto-update note -->
 <div class="container" style="padding-top: 1.5rem;">
     <div class="note">
-        Updates are automatic — the app checks for new versions on startup and lets you know when one is available. You only need to download from this page once.
+        <strong>Windows:</strong> Updates are automatic — the app checks for new versions on startup.
+        <strong>Mac:</strong> Download the latest DMG from this page to update.
     </div>
 </div>
 
@@ -269,7 +305,7 @@
         <div class="step">
             <div class="step-num">1</div>
             <h3>Install</h3>
-            <p>Download and run the installer. No additional software needed.</p>
+            <p>Download and run the installer (Windows) or open the DMG and drag to Applications (Mac).</p>
         </div>
         <div class="step">
             <div class="step-num">2</div>
@@ -287,26 +323,36 @@
 <!-- Footer -->
 <div class="footer">
     <p>
-        <a href="https://github.com/D0ry1/ScoutsReporter">View on GitHub</a>
+        <a href="https://github.com/D0ry1/ScoutsReporter">Windows source</a>
+        &nbsp;&bull;&nbsp;
+        <a href="https://github.com/D0ry1/ScoutsReporterMacVersion">Mac source</a>
         &nbsp;&bull;&nbsp;
         <a href="https://github.com/D0ry1/ScoutsReporter/releases">All releases</a>
     </p>
 </div>
 
-<!-- Download counter -->
+<!-- Download counters -->
 <script>
-    fetch('https://api.github.com/repos/D0ry1/ScoutsReporter/releases')
-        .then(function (r) { return r.json(); })
-        .then(function (releases) {
-            var total = releases
-                .flatMap(function (r) { return r.assets; })
-                .filter(function (a) { return a.name.includes('Setup') || a.name.endsWith('.zip'); })
-                .reduce(function (sum, a) { return sum + a.download_count; }, 0);
-            document.getElementById('download-count').textContent = total.toLocaleString();
-        })
-        .catch(function () {
-            document.getElementById('download-count').textContent = '';
-        });
+    function countDownloads(repo, exts) {
+        return fetch('https://api.github.com/repos/' + repo + '/releases')
+            .then(function (r) { return r.json(); })
+            .then(function (releases) {
+                return releases
+                    .flatMap(function (r) { return r.assets; })
+                    .filter(function (a) {
+                        return exts.some(function (ext) { return a.name.endsWith(ext); });
+                    })
+                    .reduce(function (sum, a) { return sum + a.download_count; }, 0);
+            });
+    }
+
+    countDownloads('D0ry1/ScoutsReporter', ['.exe', '.zip'])
+        .then(function (n) { document.getElementById('win-count').textContent = n.toLocaleString(); })
+        .catch(function () { document.getElementById('win-count').textContent = ''; });
+
+    countDownloads('D0ry1/ScoutsReporterMacVersion', ['.dmg'])
+        .then(function (n) { document.getElementById('mac-count').textContent = n.toLocaleString(); })
+        .catch(function () { document.getElementById('mac-count').textContent = ''; });
 </script>
 
 </body>
