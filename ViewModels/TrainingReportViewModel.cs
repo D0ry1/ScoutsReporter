@@ -87,6 +87,8 @@ public partial class TrainingReportViewModel : ObservableObject
         ReportData.RowFilter = $"Name LIKE '%{escaped}%' OR Flag LIKE '%{escaped}%' OR Roles LIKE '%{escaped}%'";
     }
 
+    internal async Task RunReportDirectAsync(CancellationToken ct = default) => await RunReportAsync(ct);
+
     [RelayCommand(IncludeCancelCommand = true)]
     private async Task RunReportAsync(CancellationToken ct)
     {

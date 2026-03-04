@@ -8,7 +8,6 @@ using CommunityToolkit.Mvvm.Input;
 using ScoutsReporter.Models;
 using ScoutsReporter.Services;
 using ScoutsReporter.Views;
-using System.ComponentModel;
 
 namespace ScoutsReporter.ViewModels;
 
@@ -74,10 +73,16 @@ public partial class MainViewModel : ObservableObject
     public DbsReportViewModel DbsReport { get; }
     public TrainingReportViewModel TrainingReport { get; }
     public PermitsReportViewModel PermitsReport { get; }
+    public DiagnosticPanelViewModel Diagnostics { get; }
+
+    private readonly DiagnosticLogger _diagnosticLogger;
 
     public MainViewModel()
     {
-        _http = new HttpClient { Timeout = TimeSpan.FromSeconds(120) };
+        _diagnosticLogger = new DiagnosticLogger();
+        Diagnostics = new DiagnosticPanelViewModel(_diagnosticLogger);
+        var handler = new DiagnosticHandler(_diagnosticLogger, new HttpClientHandler());
+        _http = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(120) };
         _auth = new AuthService(_http);
         _api = new ApiService(_http, _auth);
         _cache = new DataCacheService(_api, GetSelectedUnits);

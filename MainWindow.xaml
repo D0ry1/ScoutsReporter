@@ -12,6 +12,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <!-- Header -->
@@ -175,24 +176,86 @@
                 <TextBlock Text="{Binding StatusText}" FontSize="11"
                            Foreground="{DynamicResource TertiaryTextBrush}"
                            VerticalAlignment="Center" />
-                <ToggleButton IsChecked="{Binding IsDarkMode}"
-                              HorizontalAlignment="Right" VerticalAlignment="Center"
-                              Background="Transparent" BorderThickness="0"
-                              Padding="6,2" Cursor="Hand"
-                              ToolTip="Toggle dark mode">
-                    <TextBlock FontSize="11" Foreground="{DynamicResource MutedTextBrush}">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Text" Value="Dark Mode" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsDarkMode}" Value="True">
-                                        <Setter Property="Text" Value="Light Mode" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                </ToggleButton>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <ToggleButton IsChecked="{Binding Diagnostics.IsEnabled}"
+                                  Background="Transparent" BorderThickness="0"
+                                  Padding="6,2" Cursor="Hand" Margin="0,0,12,0"
+                                  ToolTip="Toggle API diagnostics panel">
+                        <TextBlock Text="Diagnostics" FontSize="11"
+                                   Foreground="{DynamicResource MutedTextBrush}" />
+                    </ToggleButton>
+                    <ToggleButton IsChecked="{Binding IsDarkMode}"
+                                  Background="Transparent" BorderThickness="0"
+                                  Padding="6,2" Cursor="Hand"
+                                  ToolTip="Toggle dark mode">
+                        <TextBlock FontSize="11" Foreground="{DynamicResource MutedTextBrush}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="Dark Mode" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsDarkMode}" Value="True">
+                                            <Setter Property="Text" Value="Light Mode" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </ToggleButton>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Diagnostics panel -->
+        <Border Grid.Row="4"
+                Background="{DynamicResource WindowBackgroundBrush}"
+                BorderBrush="{DynamicResource MainStatusBarBackgroundBrush}"
+                BorderThickness="0,1,0,0"
+                Visibility="{Binding Diagnostics.IsPanelVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                MaxHeight="250">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Toolbar -->
+                <Border Grid.Row="0" Background="{DynamicResource MainStatusBarBackgroundBrush}" Padding="8,4">
+                    <Grid>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="API Diagnostics" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource PrimaryTextBrush}"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding Diagnostics.EntryCount, StringFormat=' ({0} entries)'}"
+                                       FontSize="11" Foreground="{DynamicResource MutedTextBrush}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <Button Content="Copy to Clipboard"
+                                    Command="{Binding Diagnostics.CopyToClipboardCommand}"
+                                    FontSize="11" Padding="8,2" Margin="0,0,6,0" Cursor="Hand" />
+                            <Button Content="Clear"
+                                    Command="{Binding Diagnostics.ClearEntriesCommand}"
+                                    FontSize="11" Padding="8,2" Cursor="Hand" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Log entries -->
+                <ScrollViewer Grid.Row="1" x:Name="DiagnosticScrollViewer"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Auto"
+                              Background="{DynamicResource WindowBackgroundBrush}">
+                    <ItemsControl ItemsSource="{Binding Diagnostics.Entries}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Summary}"
+                                           FontFamily="Consolas" FontSize="11"
+                                           Foreground="{Binding StatusCategory, Converter={StaticResource DiagnosticStatusConverter}}"
+                                           Padding="8,1" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
             </Grid>
         </Border>
     </Grid>

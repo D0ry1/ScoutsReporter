@@ -122,7 +122,6 @@ public partial class DashboardViewModel : ObservableObject
         }
 
         IsRunning = true;
-        HasData = false;
         StatusText = "Running reports...";
 
         try
@@ -130,7 +129,7 @@ public partial class DashboardViewModel : ObservableObject
             if (_dbsReport.AllRows.Count == 0)
             {
                 ProgressText = "Running DBS report...";
-                await _dbsReport.RunReportCommand.ExecuteAsync(null);
+                await _dbsReport.RunReportDirectAsync();
             }
             else
             {
@@ -140,7 +139,7 @@ public partial class DashboardViewModel : ObservableObject
             if (_trainingReport.ReportRowsReadOnly.Count == 0)
             {
                 ProgressText = "Running Training report...";
-                await _trainingReport.RunReportCommand.ExecuteAsync(null);
+                await _trainingReport.RunReportDirectAsync();
             }
             else
             {

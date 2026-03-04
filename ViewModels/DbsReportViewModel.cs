@@ -81,6 +81,8 @@ public partial class DbsReportViewModel : ObservableObject
             ReportRows.Add(row);
     }
 
+    internal async Task RunReportDirectAsync(CancellationToken ct = default) => await RunReportAsync(ct);
+
     [RelayCommand(IncludeCancelCommand = true)]
     private async Task RunReportAsync(CancellationToken ct)
     {

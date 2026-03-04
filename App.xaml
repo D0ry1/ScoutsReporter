@@ -20,6 +20,7 @@
             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
             <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
             <converters:PercentToColorConverter x:Key="PercentToColorConverter" />
+            <converters:DiagnosticStatusConverter x:Key="DiagnosticStatusConverter" />
 
             <!-- Apply Nunito Sans globally -->
             <Style TargetType="Window">
