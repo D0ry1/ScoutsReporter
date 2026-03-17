@@ -2,11 +2,8 @@ using System.Collections.ObjectModel;
 using System.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Windows;
-using Microsoft.Win32;
 using ScoutsReporter.Models;
 using ScoutsReporter.Services;
-using ScoutsReporter.Views;
 
 namespace ScoutsReporter.ViewModels;
 
@@ -35,7 +32,6 @@ public partial class TrainingReportViewModel : ObservableObject
     [ObservableProperty]
     private DataView? _reportData;
 
-    // Keep for CSV export
     private List<TrainingReportRow> _reportRows = new();
 
     public IReadOnlyList<TrainingReportRow> ReportRowsReadOnly => _reportRows;
@@ -171,65 +167,4 @@ public partial class TrainingReportViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
-    private void ExportCsv()
-    {
-        if (_reportRows.Count == 0) return;
-
-        var result = MessageBox.Show(
-            "WARNING: CSV files cannot be password-protected.\n\nThis report contains sensitive personal data. The exported CSV file will be completely unencrypted and readable by anyone with access to it.\n\nFor secure exports, use the Excel option instead which allows password protection.\n\nAre you sure you want to export as unprotected CSV?",
-            "CSV Export Warning",
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Warning);
-        if (result != MessageBoxResult.Yes) return;
-
-        var dlg = new SaveFileDialog
-        {
-            Title = "Export Training Report",
-            Filter = "CSV files (*.csv)|*.csv",
-            FileName = $"training_report_{DateTime.Now:yyyyMMdd_HHmmss}.csv",
-        };
-
-        if (dlg.ShowDialog() == true)
-        {
-            try
-            {
-                CsvExportService.ExportTrainingReport(_reportRows, _sortedTitles, dlg.FileName);
-                StatusText = $"CSV exported to {dlg.FileName}";
-            }
-            catch (Exception ex)
-            {
-                StatusText = $"Export error: {ex.Message}";
-            }
-        }
-    }
-
-    [RelayCommand]
-    private void ExportExcel()
-    {
-        if (_reportRows.Count == 0) return;
-
-        var pwDialog = new PasswordDialog { Owner = Application.Current.MainWindow };
-        if (pwDialog.ShowDialog() != true) return;
-
-        var dlg = new SaveFileDialog
-        {
-            Title = "Export Training Report as Excel",
-            Filter = "Excel files (*.xlsx)|*.xlsx",
-            FileName = $"training_report_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx",
-        };
-
-        if (dlg.ShowDialog() == true)
-        {
-            try
-            {
-                ExcelExportService.ExportTrainingReport(_reportRows, _sortedTitles, dlg.FileName, pwDialog.Password);
-                StatusText = $"Excel exported to {dlg.FileName}";
-            }
-            catch (Exception ex)
-            {
-                StatusText = $"Export error: {ex.Message}";
-            }
-        }
-    }
 }

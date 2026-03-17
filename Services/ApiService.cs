@@ -31,6 +31,21 @@ public class ApiService
         return req;
     }
 
+    private async Task<HttpResponseMessage> SendWithRetryAsync(HttpMethod method, string url, object? body = null, string? typeHeader = null)
+    {
+        var req = CreateRequest(method, url, body, typeHeader);
+        var resp = await _http.SendAsync(req);
+
+        if (resp.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        {
+            await _auth.RefreshTokenAsync();
+            req = CreateRequest(method, url, body, typeHeader);
+            resp = await _http.SendAsync(req);
+        }
+
+        return resp;
+    }
+
     public async Task<JsonElement?> DataExplorerQueryAsync(object body, int retries = 3)
     {
         var url = $"{ApiBase}/DataExplorer/GetResultsAsync";
@@ -38,9 +53,18 @@ public class ApiService
 
         for (int attempt = 0; attempt < retries; attempt++)
         {
-            var req = CreateRequest(HttpMethod.Post, url, body);
-            var resp = await _http.SendAsync(req);
+            var resp = await SendWithRetryAsync(HttpMethod.Post, url, body);
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                var errorBody = await resp.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"API returned {(int)resp.StatusCode}: {errorBody}");
+            }
+
             var json = await resp.Content.ReadAsStringAsync();
+            if (string.IsNullOrWhiteSpace(json))
+                return null;
+
             var doc = JsonSerializer.Deserialize<JsonElement>(json);
             result = doc;
 
@@ -116,10 +140,9 @@ public class ApiService
         var teams = new List<TeamInfo>();
         foreach (var u in units)
         {
-            var req = CreateRequest(HttpMethod.Post,
+            var resp = await SendWithRetryAsync(HttpMethod.Post,
                 $"{ApiBase}/UnitTeamsAndRolesListingAsync",
                 new { unitid = u.Id, isDEFilter = true });
-            var resp = await _http.SendAsync(req);
             if (resp.IsSuccessStatusCode)
             {
                 var json = await resp.Content.ReadAsStringAsync();
@@ -249,11 +272,10 @@ public class ApiService
 
     public async Task<string> GetSasUrlAsync(string table, string contactId)
     {
-        var req = CreateRequest(HttpMethod.Post,
+        var resp = await SendWithRetryAsync(HttpMethod.Post,
             $"{ApiBase}/GenerateSASTokenAsync",
             new { table, partitionkey = contactId, permissions = "R" },
             typeHeader: "table");
-        var resp = await _http.SendAsync(req);
         if (!resp.IsSuccessStatusCode) return "";
         var json = await resp.Content.ReadAsStringAsync();
         var doc = JsonSerializer.Deserialize<JsonElement>(json);
@@ -283,10 +305,9 @@ public class ApiService
 
     public async Task<List<JsonElement>> FetchLmsDetailsAsync(string contactId)
     {
-        var req = CreateRequest(HttpMethod.Post,
+        var resp = await SendWithRetryAsync(HttpMethod.Post,
             $"{ApiBase}/GetLmsDetailsAsync",
             new { contactid = contactId });
-        var resp = await _http.SendAsync(req);
         if (resp.IsSuccessStatusCode)
         {
             var json = await resp.Content.ReadAsStringAsync();

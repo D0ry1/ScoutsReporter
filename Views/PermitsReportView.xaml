@@ -16,12 +16,6 @@
             <Button Content="Cancel" Command="{Binding RunReportCancelCommand}"
                     Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibilityConverter}}"
                     Padding="12,6" Margin="0,0,8,0" />
-            <Button Content="Export CSV" Command="{Binding ExportCsvCommand}"
-                    IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}"
-                    Padding="12,6" Margin="0,0,8,0" />
-            <Button Content="Export Excel" Command="{Binding ExportExcelCommand}"
-                    IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}"
-                    Padding="12,6" Margin="0,0,16,0" />
             <CheckBox Content="Hide members with no permits"
                       IsChecked="{Binding HideNoPermits}"
                       Foreground="{DynamicResource PrimaryTextBrush}"

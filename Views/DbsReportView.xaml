@@ -16,12 +16,6 @@
             <Button Content="Cancel" Command="{Binding RunReportCancelCommand}"
                     Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibilityConverter}}"
                     Padding="12,6" Margin="0,0,8,0" />
-            <Button Content="Export CSV" Command="{Binding ExportCsvCommand}"
-                    IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}"
-                    Padding="12,6" Margin="0,0,8,0" />
-            <Button Content="Export Excel" Command="{Binding ExportExcelCommand}"
-                    IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}"
-                    Padding="12,6" Margin="0,0,16,0" />
             <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                      Width="200" Padding="4,4" VerticalAlignment="Center"
                      Margin="0,0,8,0" />
@@ -80,8 +74,7 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="160" />
                 <DataGridTextColumn Header="Mem #" Binding="{Binding MembershipNumber}" Width="100" />
-                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="180" />
-                <DataGridTextColumn Header="Issued" Binding="{Binding IssuedDate}" Width="90" />
+<DataGridTextColumn Header="Issued" Binding="{Binding IssuedDate}" Width="90" />
                 <DataGridTextColumn Header="Expiry" Binding="{Binding ExpiryDate}" Width="90" />
                 <DataGridTextColumn Header="Warning" Binding="{Binding ExpiryWarning}" Width="150" />
                 <DataGridTextColumn Header="Onboarding DBS" Binding="{Binding OnboardingDbs}" Width="110" />
