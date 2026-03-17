@@ -83,6 +83,8 @@ public partial class MainViewModel : ObservableObject
         Diagnostics = new DiagnosticPanelViewModel(_diagnosticLogger);
         var handler = new DiagnosticHandler(_diagnosticLogger, new HttpClientHandler());
         _http = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(120) };
+        var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+        _http.DefaultRequestHeaders.UserAgent.ParseAdd($"ScoutsReporter/{version?.ToString(3) ?? "0.0.0"}");
         _auth = new AuthService(_http);
         _api = new ApiService(_http, _auth);
         _cache = new DataCacheService(_api, GetSelectedUnits);
