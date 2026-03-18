@@ -41,6 +41,8 @@
                         <Button x:Name="UnitPickerButton"
                                 Command="{Binding ToggleUnitPickerCommand}"
                                 Visibility="{Binding HasMultipleUnits, Converter={StaticResource BoolToVisibilityConverter}}"
+                                AutomationProperties.Name="Select units"
+                                ToolTip="Select units"
                                 Background="Transparent" BorderThickness="0"
                                 Padding="4,0" Margin="2,0,0,0"
                                 VerticalAlignment="Center" Cursor="Hand">
@@ -90,13 +92,21 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Content="Login"
+                    <Button Content="?"
+                            Click="HelpButton_Click"
+                            ToolTip="Help"
+                            AutomationProperties.Name="Help"
+                            Background="Transparent" BorderThickness="0"
+                            Foreground="White" FontSize="16" FontWeight="Bold"
+                            Padding="8,4" Margin="0,0,8,0"
+                            Cursor="Hand" />
+                    <Button Content="_Login"
                             Command="{Binding LoginCommand}"
                             Visibility="{Binding IsAuthenticated, Converter={StaticResource InverseBoolToVisibilityConverter}}"
                             Padding="16,8" FontSize="13"
                             FontWeight="SemiBold"
                             Margin="0,0,8,0" />
-                    <Button Content="Run All Reports"
+                    <Button Content="_Run All Reports"
                             Command="{Binding RunAllReportsCommand}"
                             Visibility="{Binding IsAuthenticated, Converter={StaticResource BoolToVisibilityConverter}}"
                             IsEnabled="{Binding IsRunningAll, Converter={StaticResource InverseBoolConverter}}"
@@ -104,7 +114,7 @@
                             FontWeight="SemiBold"
                             Background="{DynamicResource BrandTealBrush}" Foreground="White"
                             Margin="0,0,8,0" />
-                    <Button Content="Logout"
+                    <Button Content="Lo_gout"
                             Command="{Binding LogoutCommand}"
                             Visibility="{Binding IsAuthenticated, Converter={StaticResource BoolToVisibilityConverter}}"
                             Padding="16,8" FontSize="13"
@@ -146,6 +156,8 @@
 
                 <Button Grid.Column="3" Content="&#x2715;"
                         Command="{Binding DismissUpdateCommand}"
+                        AutomationProperties.Name="Dismiss update notification"
+                        ToolTip="Dismiss"
                         Background="Transparent" BorderThickness="0"
                         Foreground="{DynamicResource MutedTextBrush}"
                         FontSize="14" Padding="4,0"
@@ -155,6 +167,7 @@
 
         <!-- Tab Control -->
         <TabControl Grid.Row="2" Margin="8"
+                    AutomationProperties.Name="Report tabs"
                     Background="{DynamicResource WindowBackgroundBrush}">
             <TabItem Header="Dashboard">
                 <views:DashboardView DataContext="{Binding Dashboard}" />
@@ -175,11 +188,13 @@
             <Grid>
                 <TextBlock Text="{Binding StatusText}" FontSize="11"
                            Foreground="{DynamicResource TertiaryTextBrush}"
+                           AutomationProperties.LiveSetting="Polite"
                            VerticalAlignment="Center" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <ToggleButton IsChecked="{Binding Diagnostics.IsEnabled}"
                                   Background="Transparent" BorderThickness="0"
                                   Padding="6,2" Cursor="Hand" Margin="0,0,12,0"
+                                  AutomationProperties.Name="Toggle API diagnostics panel"
                                   ToolTip="Toggle API diagnostics panel">
                         <TextBlock Text="Diagnostics" FontSize="11"
                                    Foreground="{DynamicResource MutedTextBrush}" />
@@ -187,6 +202,7 @@
                     <ToggleButton IsChecked="{Binding IsDarkMode}"
                                   Background="Transparent" BorderThickness="0"
                                   Padding="6,2" Cursor="Hand"
+                                  AutomationProperties.Name="Toggle dark mode"
                                   ToolTip="Toggle dark mode">
                         <TextBlock FontSize="11" Foreground="{DynamicResource MutedTextBrush}">
                             <TextBlock.Style>

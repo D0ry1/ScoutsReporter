@@ -10,25 +10,31 @@
 
         <!-- Toolbar -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="4">
-            <Button Content="Run Report" Command="{Binding RunReportCommand}"
+            <Button Content="Run Re_port" Command="{Binding RunReportCommand}"
                     IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}"
                     Padding="12,6" Margin="0,0,8,0" />
             <Button Content="Cancel" Command="{Binding RunReportCancelCommand}"
                     Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibilityConverter}}"
                     Padding="12,6" Margin="0,0,8,0" />
             <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                     AutomationProperties.Name="Search DBS report"
                      Width="200" Padding="4,4" VerticalAlignment="Center"
                      Margin="0,0,8,0" />
             <TextBlock Text="Search" VerticalAlignment="Center"
                        Foreground="{DynamicResource PlaceholderTextBrush}" FontSize="11" Margin="0,0,16,0" />
             <TextBlock Text="{Binding ProgressText}" VerticalAlignment="Center"
                        Foreground="{DynamicResource MutedTextBrush}" FontSize="11" />
+            <Button Content="Reset Columns" Click="ResetColumns_Click"
+                    Padding="8,4" Margin="16,0,0,0" FontSize="11" VerticalAlignment="Center" />
         </StackPanel>
 
         <!-- DataGrid -->
-        <DataGrid Grid.Row="1" ItemsSource="{Binding ReportRows}"
+        <DataGrid x:Name="ReportGrid" Grid.Row="1" ItemsSource="{Binding ReportRows}"
+                  AutomationProperties.Name="DBS Disclosures report data"
                   AutoGenerateColumns="False" IsReadOnly="True"
                   CanUserSortColumns="True" CanUserReorderColumns="True"
+                  Sorting="ReportGrid_Sorting"
+                  ColumnReordered="ReportGrid_ColumnReordered"
                   GridLinesVisibility="Horizontal"
                   HeadersVisibility="Column" SelectionMode="Single"
                   HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"

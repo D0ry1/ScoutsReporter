@@ -95,6 +95,68 @@ public static class SettingsService
         return new Dictionary<string, object>();
     }
 
+    public static T? LoadObject<T>(string key) where T : class
+    {
+        try
+        {
+            if (!File.Exists(SettingsPath)) return null;
+            var json = File.ReadAllText(SettingsPath);
+            var dict = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
+            if (dict != null && dict.TryGetValue(key, out var element))
+                return JsonSerializer.Deserialize<T>(element.GetRawText());
+        }
+        catch
+        {
+            // Corrupt file
+        }
+        return null;
+    }
+
+    public static void SaveObject<T>(string key, T value) where T : class
+    {
+        try
+        {
+            Directory.CreateDirectory(SettingsDir);
+            Dictionary<string, JsonElement> dict;
+            if (File.Exists(SettingsPath))
+            {
+                var existing = File.ReadAllText(SettingsPath);
+                dict = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(existing)
+                       ?? new Dictionary<string, JsonElement>();
+            }
+            else
+            {
+                dict = new Dictionary<string, JsonElement>();
+            }
+
+            var serialized = JsonSerializer.Serialize(value);
+            dict[key] = JsonDocument.Parse(serialized).RootElement.Clone();
+
+            var options = new JsonSerializerOptions { WriteIndented = false };
+            File.WriteAllText(SettingsPath, JsonSerializer.Serialize(dict, options));
+        }
+        catch
+        {
+            // Best-effort persistence
+        }
+    }
+
+    public static void RemoveKey(string key)
+    {
+        try
+        {
+            if (!File.Exists(SettingsPath)) return;
+            var json = File.ReadAllText(SettingsPath);
+            var dict = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
+            if (dict != null && dict.Remove(key))
+                File.WriteAllText(SettingsPath, JsonSerializer.Serialize(dict));
+        }
+        catch
+        {
+            // Best-effort
+        }
+    }
+
     private static void SaveAll(Dictionary<string, object> data)
     {
         try

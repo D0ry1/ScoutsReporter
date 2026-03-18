@@ -1,0 +1,203 @@
+<Window x:Class="ScoutsReporter.Views.HelpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Scouts Reporter Help" Height="620" Width="560"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResizeWithGrip"
+        Icon="/fleur-de-lis-marque-purple-png.png"
+        Background="{DynamicResource WindowBackgroundBrush}">
+    <Grid TextElement.Foreground="{DynamicResource PrimaryTextBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Header banner -->
+        <Border Grid.Row="0" Background="{DynamicResource BrandPurpleBrush}" Padding="16,12">
+            <TextBlock Text="Scouts Reporter Help" FontSize="18" FontWeight="Bold" Foreground="White" />
+        </Border>
+
+        <!-- Scrollable help content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20,16"
+                      AutomationProperties.Name="Help content">
+            <StackPanel>
+
+                <!-- Getting Started -->
+                <TextBlock Text="Getting Started" FontSize="15" FontWeight="Bold"
+                           Foreground="{DynamicResource BrandPurpleBrush}" Margin="0,0,0,6" />
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,4">
+                    Click <Bold>Login</Bold> to sign in with your Scouts membership credentials.
+                    Once authenticated, click <Bold>Run All Reports</Bold> to fetch your unit data,
+                    or switch to individual report tabs to run them one at a time.
+                    Press <Bold>F1</Bold> at any time to open this help window.
+                </TextBlock>
+                <Border BorderBrush="{DynamicResource SectionDividerBrush}" BorderThickness="0,0,0,1" Margin="0,10,0,14" />
+
+                <!-- Unit Picker -->
+                <TextBlock Text="Unit Picker" FontSize="15" FontWeight="Bold"
+                           Foreground="{DynamicResource BrandPurpleBrush}" Margin="0,0,0,6" />
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,4">
+                    If you have access to multiple units, click the <Bold>&#x25BC;</Bold> arrow next to your
+                    group name in the header to open the unit picker. You can select or deselect individual
+                    units, or use the <Bold>All</Bold> / <Bold>None</Bold> buttons. Reports will include
+                    data for all selected units.
+                </TextBlock>
+                <Border BorderBrush="{DynamicResource SectionDividerBrush}" BorderThickness="0,0,0,1" Margin="0,10,0,14" />
+
+                <!-- Report Tables -->
+                <TextBlock Text="Report Tables" FontSize="15" FontWeight="Bold"
+                           Foreground="{DynamicResource BrandPurpleBrush}" Margin="0,0,0,6" />
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,4">
+                    <Bold>Sorting:</Bold> Click a column header to sort by that column.
+                    Click again to reverse the sort direction. Click a third time to remove the sort.
+                    Hold <Bold>Shift</Bold> and click additional columns to sort by multiple columns at once.
+                </TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,4">
+                    <Bold>Column reordering:</Bold> Drag a column header left or right to rearrange columns.
+                </TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,4">
+                    <Bold>Column resizing:</Bold> Drag the edge of a column header to adjust its width.
+                </TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,4">
+                    <Bold>Reset Columns:</Bold> Click the <Bold>Reset Columns</Bold> button above any
+                    report table to restore the default column order, widths, and sort.
+                </TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,4">
+                    <Bold>Search:</Bold> Use the search box above a report table to filter rows.
+                    Matching is case-insensitive and checks all visible columns.
+                </TextBlock>
+                <Border BorderBrush="{DynamicResource SectionDividerBrush}" BorderThickness="0,0,0,1" Margin="0,10,0,14" />
+
+                <!-- Dashboard -->
+                <TextBlock Text="Dashboard" FontSize="15" FontWeight="Bold"
+                           Foreground="{DynamicResource BrandPurpleBrush}" Margin="0,0,0,6" />
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,4">
+                    The Dashboard tab shows compliance overview tiles summarising DBS, training,
+                    and permit status across your selected units. Expand individual units to see
+                    per-unit breakdowns.
+                </TextBlock>
+                <Border BorderBrush="{DynamicResource SectionDividerBrush}" BorderThickness="0,0,0,1" Margin="0,10,0,14" />
+
+                <!-- DBS / Disclosures Report -->
+                <TextBlock Text="DBS / Disclosures Report" FontSize="15" FontWeight="Bold"
+                           Foreground="{DynamicResource BrandPurpleBrush}" Margin="0,0,0,6" />
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,4">
+                    Lists all members with their DBS disclosure status. Cells are colour-coded:
+                    green for valid, amber for expiring soon, and red for expired or missing disclosures.
+                </TextBlock>
+                <Border BorderBrush="{DynamicResource SectionDividerBrush}" BorderThickness="0,0,0,1" Margin="0,10,0,14" />
+
+                <!-- Training Report -->
+                <TextBlock Text="Training Report" FontSize="15" FontWeight="Bold"
+                           Foreground="{DynamicResource BrandPurpleBrush}" Margin="0,0,0,6" />
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,4">
+                    Shows training completion for each member. Training module columns are generated
+                    dynamically based on your unit's data. Cells are colour-coded: green for completed,
+                    amber for in progress, and red for overdue or not started.
+                </TextBlock>
+                <Border BorderBrush="{DynamicResource SectionDividerBrush}" BorderThickness="0,0,0,1" Margin="0,10,0,14" />
+
+                <!-- Permits Report -->
+                <TextBlock Text="Permits Report" FontSize="15" FontWeight="Bold"
+                           Foreground="{DynamicResource BrandPurpleBrush}" Margin="0,0,0,6" />
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,4">
+                    Displays permits held by members. Use the <Bold>Hide members with no permits</Bold>
+                    checkbox to filter the list to only those who hold at least one permit.
+                </TextBlock>
+                <Border BorderBrush="{DynamicResource SectionDividerBrush}" BorderThickness="0,0,0,1" Margin="0,10,0,14" />
+
+                <!-- Dark Mode -->
+                <TextBlock Text="Dark Mode" FontSize="15" FontWeight="Bold"
+                           Foreground="{DynamicResource BrandPurpleBrush}" Margin="0,0,0,6" />
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,4">
+                    Toggle between light and dark themes using the <Bold>Dark Mode</Bold> /
+                    <Bold>Light Mode</Bold> button in the bottom status bar.
+                    Your preference is saved and restored on next launch.
+                </TextBlock>
+                <Border BorderBrush="{DynamicResource SectionDividerBrush}" BorderThickness="0,0,0,1" Margin="0,10,0,14" />
+
+                <!-- Diagnostics -->
+                <TextBlock Text="Diagnostics" FontSize="15" FontWeight="Bold"
+                           Foreground="{DynamicResource BrandPurpleBrush}" Margin="0,0,0,6" />
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,4">
+                    Click <Bold>Diagnostics</Bold> in the status bar to show the API log panel.
+                    This displays all API requests and responses, which can be helpful for
+                    troubleshooting. Use <Bold>Copy to Clipboard</Bold> to share the log when
+                    reporting issues.
+                </TextBlock>
+                <Border BorderBrush="{DynamicResource SectionDividerBrush}" BorderThickness="0,0,0,1" Margin="0,10,0,14" />
+
+                <!-- Auto-Update -->
+                <TextBlock Text="Auto-Update" FontSize="15" FontWeight="Bold"
+                           Foreground="{DynamicResource BrandPurpleBrush}" Margin="0,0,0,6" />
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,4">
+                    When a new version is available, a banner appears at the top of the window.
+                    Click <Bold>Update &amp; Restart</Bold> to download and install the update
+                    automatically. The app will restart once the update is complete.
+                </TextBlock>
+                <Border BorderBrush="{DynamicResource SectionDividerBrush}" BorderThickness="0,0,0,1" Margin="0,10,0,14" />
+
+                <!-- Keyboard Shortcuts -->
+                <TextBlock Text="Keyboard Shortcuts" FontSize="15" FontWeight="Bold"
+                           Foreground="{DynamicResource BrandPurpleBrush}" Margin="0,0,0,6" />
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,4">
+                    You can navigate the app entirely by keyboard. Press <Bold>Tab</Bold> to move
+                    between controls and <Bold>Enter</Bold> or <Bold>Space</Bold> to activate buttons.
+                    A purple outline shows which control currently has focus.
+                </TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,2">
+                    <Bold>Access keys</Bold> (hold <Bold>Alt</Bold> to reveal underlined letters):
+                </TextBlock>
+                <Grid Margin="8,4,0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Alt+L" FontWeight="SemiBold" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Login" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Alt+R" FontWeight="SemiBold" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Run All Reports" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Alt+G" FontWeight="SemiBold" />
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Logout" />
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Alt+D" FontWeight="SemiBold" />
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="Run Dashboard" />
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Alt+P" FontWeight="SemiBold" />
+                    <TextBlock Grid.Row="4" Grid.Column="1" Text="Run Report (on report tabs)" />
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Alt+H" FontWeight="SemiBold" />
+                    <TextBlock Grid.Row="5" Grid.Column="1" Text="Hide members with no permits" />
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="F1" FontWeight="SemiBold" />
+                    <TextBlock Grid.Row="6" Grid.Column="1" Text="Open this help window" />
+                </Grid>
+                <Border BorderBrush="{DynamicResource SectionDividerBrush}" BorderThickness="0,0,0,1" Margin="0,10,0,14" />
+
+                <!-- Screen Reader Support -->
+                <TextBlock Text="Screen Reader Support" FontSize="15" FontWeight="Bold"
+                           Foreground="{DynamicResource BrandPurpleBrush}" Margin="0,0,0,6" />
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,4">
+                    Scouts Reporter is compatible with screen readers such as Windows Narrator,
+                    NVDA, and JAWS. All buttons, search boxes, data grids, and toggle controls
+                    have descriptive labels that are announced when focused. Status bar updates
+                    are announced automatically.
+                </TextBlock>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer with Close button -->
+        <Border Grid.Row="2" BorderBrush="{DynamicResource SectionDividerBrush}"
+                BorderThickness="0,1,0,0" Padding="16,10">
+            <Button Content="Close" IsCancel="True" Click="CloseButton_Click"
+                    HorizontalAlignment="Right" Padding="20,6" FontSize="13" />
+        </Border>
+    </Grid>
+</Window>

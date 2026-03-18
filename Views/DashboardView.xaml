@@ -10,7 +10,7 @@
 
         <!-- Row 0 — Toolbar -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="4">
-            <Button Content="Run Dashboard" Command="{Binding RunDashboardCommand}"
+            <Button Content="Run _Dashboard" Command="{Binding RunDashboardCommand}"
                     IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}"
                     Padding="16,8" Background="{DynamicResource BrandPurpleBrush}" Foreground="White"
                     FontWeight="SemiBold" FontSize="13" Margin="0,0,12,0" />
@@ -107,6 +107,7 @@
                                             </Grid.ColumnDefinitions>
                                             <!-- Expand/collapse arrow -->
                                             <Button Grid.Column="0" Command="{Binding ToggleExpandCommand}"
+                                                    AutomationProperties.Name="Expand or collapse unit details"
                                                     Background="Transparent" BorderThickness="0"
                                                     Padding="4,0" Margin="0,0,8,0" Cursor="Hand"
                                                     VerticalAlignment="Center">

@@ -24,6 +24,20 @@
             <converters:WarningToBackgroundConverter x:Key="WarningToBackgroundConverter" />
             <converters:DiagnosticStatusConverter x:Key="DiagnosticStatusConverter" />
 
+            <!-- High-visibility keyboard focus indicator -->
+            <Style x:Key="HighVisibilityFocusVisual">
+                <Setter Property="Control.Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Rectangle Margin="-2" StrokeThickness="2"
+                                       Stroke="{DynamicResource BrandPurpleBrush}"
+                                       RadiusX="2" RadiusY="2"
+                                       SnapsToDevicePixels="True" />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
             <!-- Apply Nunito Sans globally -->
             <Style TargetType="Window">
                 <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
@@ -36,15 +50,22 @@
             </Style>
             <Style TargetType="Button">
                 <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
+                <Setter Property="FocusVisualStyle" Value="{StaticResource HighVisibilityFocusVisual}" />
+            </Style>
+            <Style TargetType="ToggleButton">
+                <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
+                <Setter Property="FocusVisualStyle" Value="{StaticResource HighVisibilityFocusVisual}" />
             </Style>
             <Style TargetType="TabItem">
                 <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
+                <Setter Property="FocusVisualStyle" Value="{StaticResource HighVisibilityFocusVisual}" />
             </Style>
             <Style TargetType="DataGrid">
                 <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
             </Style>
             <Style TargetType="CheckBox">
                 <Setter Property="FontFamily" Value="{StaticResource NunitoSans}" />
+                <Setter Property="FocusVisualStyle" Value="{StaticResource HighVisibilityFocusVisual}" />
             </Style>
 
             <Style x:Key="FlagCell" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
