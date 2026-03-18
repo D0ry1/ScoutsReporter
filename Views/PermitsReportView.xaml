@@ -104,7 +104,8 @@
                                         <TextBlock Text="{Binding Issued}" Width="90" />
                                         <TextBlock Text="{Binding Expiry}" Width="90" />
                                         <TextBlock Text="{Binding Warning}" Width="160"
-                                                   Foreground="{Binding Flag, Converter={StaticResource FlagToColorConverter}}" />
+                                                   Foreground="{Binding Warning, Converter={StaticResource WarningToColorConverter}}"
+                                                   Background="{Binding Warning, Converter={StaticResource WarningToBackgroundConverter}}" />
                                         <TextBlock Text="{Binding Restriction}" Width="200" Foreground="{DynamicResource MutedTextBrush}"
                                                    TextTrimming="CharacterEllipsis" />
                                     </StackPanel>

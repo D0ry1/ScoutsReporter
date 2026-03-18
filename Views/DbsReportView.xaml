@@ -76,7 +76,16 @@
                 <DataGridTextColumn Header="Mem #" Binding="{Binding MembershipNumber}" Width="100" />
 <DataGridTextColumn Header="Issued" Binding="{Binding IssuedDate}" Width="90" />
                 <DataGridTextColumn Header="Expiry" Binding="{Binding ExpiryDate}" Width="90" />
-                <DataGridTextColumn Header="Warning" Binding="{Binding ExpiryWarning}" Width="150" />
+                <DataGridTemplateColumn Header="Warning" Width="150" SortMemberPath="ExpiryWarning">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding ExpiryWarning}" FontWeight="Bold"
+                                       Foreground="{Binding ExpiryWarning, Converter={StaticResource WarningToColorConverter}}"
+                                       Background="{Binding ExpiryWarning, Converter={StaticResource WarningToBackgroundConverter}}"
+                                       Padding="4,2" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Onboarding DBS" Binding="{Binding OnboardingDbs}" Width="110" />
                 <DataGridTextColumn Header="Disclosure Status" Binding="{Binding DisclosureStatus}" Width="140" />
                 <DataGridTextColumn Header="Certificate" Binding="{Binding Certificate}" Width="110" />

@@ -20,6 +20,8 @@
             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
             <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
             <converters:PercentToColorConverter x:Key="PercentToColorConverter" />
+            <converters:WarningToColorConverter x:Key="WarningToColorConverter" />
+            <converters:WarningToBackgroundConverter x:Key="WarningToBackgroundConverter" />
             <converters:DiagnosticStatusConverter x:Key="DiagnosticStatusConverter" />
 
             <!-- Apply Nunito Sans globally -->
