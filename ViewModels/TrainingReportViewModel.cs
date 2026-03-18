@@ -44,7 +44,11 @@ public partial class TrainingReportViewModel : ObservableObject
     [ObservableProperty]
     private string _searchText = "";
 
+    [ObservableProperty]
+    private bool _hideNonMemberDisclosure;
+
     partial void OnSearchTextChanged(string value) => ApplySearchFilter();
+    partial void OnHideNonMemberDisclosureChanged(bool value) => ApplySearchFilter();
 
     public TrainingReportViewModel(ApiService api, AuthService auth, TrainingService trainingService, DataCacheService cache, MainViewModel main)
     {
@@ -64,6 +68,7 @@ public partial class TrainingReportViewModel : ObservableObject
         OkCount = 0;
         AttentionCount = 0;
         SearchText = "";
+        HideNonMemberDisclosure = false;
         StatusText = "Click 'Run Report' to generate the Training report.";
         ProgressText = "";
     }
@@ -72,15 +77,36 @@ public partial class TrainingReportViewModel : ObservableObject
     {
         if (ReportData == null) return;
 
+        var filters = new List<string>();
+
+        if (HideNonMemberDisclosure)
+            filters.Add("NOT (Roles LIKE '%Non Member - Needs Disclosure%' AND Roles NOT LIKE '%;%')");
+
         var search = SearchText.Trim();
-        if (string.IsNullOrEmpty(search))
+        if (!string.IsNullOrEmpty(search))
         {
-            ReportData.RowFilter = "";
-            return;
+            var escaped = search.Replace("'", "''");
+            filters.Add($"(Name LIKE '%{escaped}%' OR Flag LIKE '%{escaped}%' OR Roles LIKE '%{escaped}%')");
         }
 
-        var escaped = search.Replace("'", "''");
-        ReportData.RowFilter = $"Name LIKE '%{escaped}%' OR Flag LIKE '%{escaped}%' OR Roles LIKE '%{escaped}%'";
+        ReportData.RowFilter = filters.Count > 0 ? string.Join(" AND ", filters) : "";
+        UpdateSummaryCounts();
+    }
+
+    private void UpdateSummaryCounts()
+    {
+        if (ReportData == null) return;
+
+        int total = ReportData.Count;
+        int ok = 0;
+        foreach (DataRowView row in ReportData)
+        {
+            var flag = row["Flag"]?.ToString() ?? "";
+            if (flag is "OK" or "No expiry") ok++;
+        }
+        TotalMembers = total;
+        OkCount = ok;
+        AttentionCount = total - ok;
     }
 
     internal async Task RunReportDirectAsync(CancellationToken ct = default) => await RunReportAsync(ct);
@@ -148,9 +174,7 @@ public partial class TrainingReportViewModel : ObservableObject
             }
 
             ReportData = dt.DefaultView;
-            TotalMembers = report.Count;
-            OkCount = report.Count(r => r.Flag is "OK" or "No expiry");
-            AttentionCount = report.Count(r => r.Flag is not "OK" and not "No expiry");
+            ApplySearchFilter();
             StatusText = $"Done - {TotalMembers} members ({OkCount} OK, {AttentionCount} need attention)";
         }
         catch (OperationCanceledException)

@@ -16,6 +16,10 @@
             <Button Content="Cancel" Command="{Binding RunReportCancelCommand}"
                     Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibilityConverter}}"
                     Padding="12,6" Margin="0,0,8,0" />
+            <CheckBox Content="_Hide Non Member - Needs Disclosure"
+                     IsChecked="{Binding HideNonMemberDisclosure}"
+                     Foreground="{DynamicResource PrimaryTextBrush}"
+                     VerticalAlignment="Center" Margin="0,0,16,0" />
             <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                      AutomationProperties.Name="Search Training report"
                      Width="200" Padding="4,4" VerticalAlignment="Center"
