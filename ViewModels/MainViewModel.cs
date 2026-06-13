@@ -40,6 +40,16 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isDarkMode;
 
+    // ── Experimental: which data engine the reports use ──────────
+    [ObservableProperty]
+    private ComplianceEngine _complianceEngine;
+
+    // Only the engines that are fully wired for the reports are user-selectable.
+    // ScoutsBackend stays in the enum but is reserved for the dashboard-% path (it can't
+    // populate the detailed report columns), so it's not offered here yet.
+    public IReadOnlyList<ComplianceEngine> ComplianceEngines { get; } =
+        new[] { ComplianceEngine.Standard, ComplianceEngine.Parallel };
+
     // ── Update banner ────────────────────────────────────────────
 
     private readonly UpdateService _updateService = new();
@@ -99,6 +109,7 @@ public partial class MainViewModel : ObservableObject
         Dashboard = new DashboardViewModel(DbsReport, TrainingReport, this);
 
         IsDarkMode = SettingsService.LoadIsDarkMode();
+        ComplianceEngine = SettingsService.LoadComplianceEngine();
 
         // Try auto-login from saved token on startup, then check for updates
         _ = Application.Current.Dispatcher.InvokeAsync(async () =>
@@ -113,6 +124,9 @@ public partial class MainViewModel : ObservableObject
         ThemeService.ApplyTheme(value);
         SettingsService.SaveIsDarkMode(value);
     }
+
+    partial void OnComplianceEngineChanged(ComplianceEngine value)
+        => SettingsService.SaveComplianceEngine(value);
 
     private List<UnitInfo> GetSelectedUnits()
     {

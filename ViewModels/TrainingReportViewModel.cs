@@ -131,9 +131,10 @@ public partial class TrainingReportViewModel : ObservableObject
             await _cache.EnsureLoadedAsync(progress, ct);
             var members = _cache.Members!;
 
-            StatusText = "Step 4: Fetching training records...";
+            var engine = SettingsService.LoadComplianceEngine();
+            StatusText = $"Step 4: Fetching training records... ({engine})";
             await _auth.RefreshTokenAsync();
-            var training = await _trainingService.FetchAllTrainingAsync(members, progress);
+            var training = await _trainingService.FetchAllTrainingAsync(members, progress, engine);
             ct.ThrowIfCancellationRequested();
 
             StatusText = "Step 5: Building report...";

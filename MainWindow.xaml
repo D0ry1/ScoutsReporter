@@ -191,6 +191,16 @@
                            AutomationProperties.LiveSetting="Polite"
                            VerticalAlignment="Center" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0"
+                                ToolTip="Experimental — data engine for the reports. Standard: validated. Parallel: same results, faster. Scouts backend: experimental.">
+                        <TextBlock Text="Engine:" FontSize="11" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,4,0" />
+                        <ComboBox ItemsSource="{Binding ComplianceEngines}"
+                                  SelectedItem="{Binding ComplianceEngine}"
+                                  FontSize="11" MinWidth="92" Padding="4,0"
+                                  VerticalAlignment="Center"
+                                  AutomationProperties.Name="Compliance data engine (experimental)" />
+                    </StackPanel>
                     <ToggleButton IsChecked="{Binding Diagnostics.IsEnabled}"
                                   Background="Transparent" BorderThickness="0"
                                   Padding="6,2" Cursor="Hand" Margin="0,0,12,0"

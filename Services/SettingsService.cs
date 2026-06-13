@@ -62,6 +62,31 @@ public static class SettingsService
         SaveAll(existing);
     }
 
+    public static ComplianceEngine LoadComplianceEngine()
+    {
+        try
+        {
+            if (!File.Exists(SettingsPath)) return ComplianceEngine.Standard;
+            var json = File.ReadAllText(SettingsPath);
+            var doc = JsonDocument.Parse(json);
+            if (doc.RootElement.TryGetProperty("complianceEngine", out var prop)
+                && Enum.TryParse<ComplianceEngine>(prop.GetString(), out var engine))
+                return engine;
+        }
+        catch
+        {
+            // Corrupt file — default to Standard
+        }
+        return ComplianceEngine.Standard;
+    }
+
+    public static void SaveComplianceEngine(ComplianceEngine engine)
+    {
+        var existing = LoadAll();
+        existing["complianceEngine"] = engine.ToString();
+        SaveAll(existing);
+    }
+
     private static Dictionary<string, object> LoadAll()
     {
         try

@@ -106,9 +106,10 @@ r.Flag.Contains(search, StringComparison.OrdinalIgnoreCase) ||
             DisclosureService.LinkMembersToOnboarding(members, onboarding);
             ct.ThrowIfCancellationRequested();
 
-            // Step 5: Disclosures
-            StatusText = "Step 5: Fetching disclosure records...";
-            var disclosures = await _disclosureService.FetchAllDisclosuresAsync(members, progress);
+            // Step 5: Disclosures (engine chosen via the experimental toggle)
+            var engine = SettingsService.LoadComplianceEngine();
+            StatusText = $"Step 5: Fetching disclosure records... ({engine})";
+            var disclosures = await _disclosureService.FetchAllDisclosuresAsync(members, progress, engine);
             ct.ThrowIfCancellationRequested();
 
             // Step 6: Build report

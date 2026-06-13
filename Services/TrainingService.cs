@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Globalization;
 using System.Text.Json;
 using ScoutsReporter.Models;
@@ -31,7 +32,17 @@ public class TrainingService
 
     public async Task<Dictionary<string, List<JsonElement>>> FetchAllTrainingAsync(
         Dictionary<string, Member> members,
-        IProgress<string>? progress = null)
+        IProgress<string>? progress = null,
+        ComplianceEngine engine = ComplianceEngine.Standard)
+    {
+        return engine == ComplianceEngine.Parallel
+            ? await FetchAllParallelAsync(members, progress)
+            : await FetchAllSequentialAsync(members, progress);
+    }
+
+    private async Task<Dictionary<string, List<JsonElement>>> FetchAllSequentialAsync(
+        Dictionary<string, Member> members,
+        IProgress<string>? progress)
     {
         var training = new Dictionary<string, List<JsonElement>>();
         var contactIds = members.Keys.ToList();
@@ -63,6 +74,40 @@ public class TrainingService
             await Task.Delay(300);
         }
         return training;
+    }
+
+    // Identical per-contact fetch as Standard, with bounded concurrency. One token refresh up
+    // front covers the batch (id_token lasts ~15 min).
+    private async Task<Dictionary<string, List<JsonElement>>> FetchAllParallelAsync(
+        Dictionary<string, Member> members,
+        IProgress<string>? progress)
+    {
+        await _auth.RefreshTokenAsync();
+        var training = new ConcurrentDictionary<string, List<JsonElement>>();
+        using var gate = new SemaphoreSlim(8);
+        int total = members.Count, done = 0;
+
+        var tasks = members.Select(async kv =>
+        {
+            await gate.WaitAsync();
+            try
+            {
+                training[kv.Key] = await _api.FetchLmsDetailsAsync(kv.Key);
+            }
+            catch (Exception ex)
+            {
+                training[kv.Key] = new();
+                progress?.Report($"{kv.Value.FullName}... error: {ex.Message}");
+            }
+            finally
+            {
+                int n = Interlocked.Increment(ref done);
+                progress?.Report($"[{n}/{total}] fetched (parallel)");
+                gate.Release();
+            }
+        });
+        await Task.WhenAll(tasks);
+        return new Dictionary<string, List<JsonElement>>(training);
     }
 
     public static (string flag, string expiry, string warning) ClassifyTraining(JsonElement record)
