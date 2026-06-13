@@ -44,9 +44,9 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private ComplianceEngine _complianceEngine;
 
-    // Only the engines that are fully wired for the reports are user-selectable.
-    // ScoutsBackend stays in the enum but is reserved for the dashboard-% path (it can't
-    // populate the detailed report columns), so it's not offered here yet.
+    // Standard + Parallel only. ScoutsBackend is intentionally NOT offered: a spike showed the
+    // Scouts compliance views only hold non-compliant/in-progress rows (1 of 28 members), so they
+    // can't enumerate every member for the reports. See the design spec's Outcome section.
     public IReadOnlyList<ComplianceEngine> ComplianceEngines { get; } =
         new[] { ComplianceEngine.Standard, ComplianceEngine.Parallel };
 

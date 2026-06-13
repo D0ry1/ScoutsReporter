@@ -12,6 +12,10 @@ public enum ComplianceEngine
     /// <summary>Identical results to Standard, but per-contact fetches run concurrently (faster).</summary>
     Parallel,
 
-    /// <summary>Experimental: bulk data from the Scouts compliance dashboard views.</summary>
+    /// <summary>
+    /// Not implemented — dropped after a spike (the Scouts compliance views only hold
+    /// non-compliant/in-progress rows, so they can't enumerate all members for the reports).
+    /// Retained for documentation; falls back to Standard. See the design spec's Outcome section.
+    /// </summary>
     ScoutsBackend,
 }

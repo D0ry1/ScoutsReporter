@@ -91,8 +91,8 @@ public class DisclosureService
         IProgress<string>? progress = null,
         ComplianceEngine engine = ComplianceEngine.Standard)
     {
-        // ScoutsBackend is wired in BackendComplianceSource; until selected here it uses the
-        // validated sequential path.
+        // Only Standard (sequential) and Parallel are implemented. ScoutsBackend was dropped
+        // (the compliance views can't enumerate all members) and falls back to sequential.
         return engine == ComplianceEngine.Parallel
             ? await FetchAllParallelAsync(members, progress)
             : await FetchAllSequentialAsync(members, progress);

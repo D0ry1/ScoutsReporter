@@ -1,8 +1,29 @@
 # Design — Compliance Engine Toggle (experimental, 3-way)
 
 Date: 2026-06-13
-Status: proposed (awaiting review)
-Repo: `ScoutsReporter/` (WPF app, v1.5.2)
+Status: **implemented as 2-way (Standard + Parallel); backend dropped** — see Outcome
+Repo: `ScoutsReporter/` (WPF app, v1.5.3)
+
+## Outcome (2026-06-13)
+
+Built **Standard** + **Parallel** (v1.5.3): a `ComplianceEngine` setting, parallel per-contact
+fetch (bounded concurrency, one token refresh up front), wired through both report VMs, with an
+"Engine" selector in the status bar. Parallel returns identical results to Standard, faster.
+
+**The `ScoutsBackend` engine was dropped after spikes**, not built:
+1. The compliance views are a *summary* source — no certificate-reference / disclosure-type /
+   issued-date detail the reports show.
+2. More fundamentally, an always-true query across every team/unit returned **1 of 28 members**
+   from `DisclosureComplianceDashboardView`, and `LearningComplianceDashboardView` rejected the
+   query outright. The views only hold non-compliant/in-progress rows; they **cannot enumerate
+   every member**, which the row-level reports require.
+3. Correctness didn't need it anyway — the POR `RoleRequirements` engine was independently
+   validated against the system's own compliance dashboards (President/VP/LES excluded from DBS;
+   Helpers from learning; First Aid = section teams).
+
+`ScoutsBackend` remains in the enum (documented, falls back to Standard) but is not user-selectable.
+
+---
 
 ## Goal
 
