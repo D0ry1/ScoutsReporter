@@ -29,6 +29,7 @@ public class DisclosureService
         ["NOT IN SYSTEM"] = 5,
         ["CHECK"] = 6,
         ["OK"] = 7,
+        ["N/A"] = 8,
     };
 
     private readonly ApiService _api;
@@ -259,6 +260,16 @@ public class DisclosureService
 
             if (onboardingDbs == "Outstanding" && flag != "EXPIRED" && flag != "OK" && flag != "EXPIRING SOON")
                 flag = "ACTION NEEDED";
+
+            // POR (Chapter 16 Teams Table): only flag a DBS if the member's current role(s)
+            // actually require a criminal record check. Honorary roles (President / Vice
+            // President) and similar are marked N/A and excluded from the compliance %.
+            if (!RoleRequirements.ForMember(mem.Roles).Dbs)
+            {
+                flag = "N/A";
+                if (string.IsNullOrEmpty(status) || status == "No Disclosure")
+                    status = "Not Required";
+            }
 
             var outstanding = GetOutstandingActions(onboarding, mns);
 

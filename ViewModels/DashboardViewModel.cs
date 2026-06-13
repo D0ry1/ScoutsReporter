@@ -166,8 +166,11 @@ public partial class DashboardViewModel : ObservableObject
     {
         // ── DBS ──────────────────────────────────────────────
         var dbsRows = _dbsReport.AllRows;
-        DbsTotalCount = dbsRows.Count;
-        DbsOkCount = dbsRows.Count(r => r.Flag is "OK" or "EXPIRING SOON");
+        // "N/A" = the member's role(s) don't require a DBS (e.g. President / Vice President).
+        // Exclude them from the compliance % so they don't drag it down.
+        var dbsApplicable = dbsRows.Where(r => r.Flag != "N/A").ToList();
+        DbsTotalCount = dbsApplicable.Count;
+        DbsOkCount = dbsApplicable.Count(r => r.Flag is "OK" or "EXPIRING SOON");
         DbsCompliancePercent = DbsTotalCount > 0
             ? Math.Round((double)DbsOkCount / DbsTotalCount * 100, 1) : 0;
 
@@ -189,7 +192,7 @@ public partial class DashboardViewModel : ObservableObject
                 FlagBrush = brush,
             });
 
-            if (group.Key != "OK")
+            if (group.Key != "OK" && group.Key != "N/A")
             {
                 DbsAttentionGroups.Add(new FlagGroup
                 {
@@ -218,11 +221,11 @@ public partial class DashboardViewModel : ObservableObject
             AddAttentionGroups(SafeguardingAttentionGroups, training, breakdown);
         }
 
-        var sgCompliant = trainingRows.Count(row =>
-            safeguardingTrainings.All(t => ClassifyTraining(row, t) is TrainingStatus.Ok or TrainingStatus.ExpiringSoon));
+        var (sgApplicable, sgCompliant) = TrainingCompliance(trainingRows, safeguardingTrainings);
+        SafeguardingTotalCount = sgApplicable;
         SafeguardingOkCount = sgCompliant;
-        SafeguardingCompliancePercent = SafeguardingTotalCount > 0
-            ? Math.Round((double)sgCompliant / SafeguardingTotalCount * 100, 1) : 0;
+        SafeguardingCompliancePercent = sgApplicable > 0
+            ? Math.Round((double)sgCompliant / sgApplicable * 100, 1) : 0;
 
         // First Response (tracked separately, not compliance-affecting)
         FirstResponseBreakdowns.Clear();
@@ -236,11 +239,11 @@ public partial class DashboardViewModel : ObservableObject
             AddAttentionGroups(FirstResponseAttentionGroups, training, breakdown);
         }
 
-        var frCompliant = trainingRows.Count(row =>
-            firstResponseTrainings.All(t => ClassifyTraining(row, t) is TrainingStatus.Ok or TrainingStatus.ExpiringSoon));
+        var (frApplicable, frCompliant) = TrainingCompliance(trainingRows, firstResponseTrainings);
+        FirstResponseTotalCount = frApplicable;
         FirstResponseOkCount = frCompliant;
-        FirstResponseCompliancePercent = FirstResponseTotalCount > 0
-            ? Math.Round((double)frCompliant / FirstResponseTotalCount * 100, 1) : 0;
+        FirstResponseCompliancePercent = frApplicable > 0
+            ? Math.Round((double)frCompliant / frApplicable * 100, 1) : 0;
 
         // Training compliance for overall = Safety & Safeguarding only
         TrainingCompliancePercent = SafeguardingCompliancePercent;
@@ -275,7 +278,7 @@ public partial class DashboardViewModel : ObservableObject
                 Count = group.Count(),
                 FlagBrush = brush,
             });
-            if (group.Key != "OK")
+            if (group.Key != "OK" && group.Key != "N/A")
             {
                 breakdown.DbsAttentionGroups.Add(new FlagGroup
                 {
@@ -593,17 +596,39 @@ public partial class DashboardViewModel : ObservableObject
 
     private static double CalcDbsPercent(List<DbsReportRow> rows)
     {
-        if (rows.Count == 0) return 0;
-        var ok = rows.Count(r => r.Flag is "OK" or "EXPIRING SOON");
-        return Math.Round((double)ok / rows.Count * 100, 1);
+        // Exclude "N/A" (role doesn't require a DBS) from the compliance %.
+        var applicable = rows.Where(r => r.Flag != "N/A").ToList();
+        if (applicable.Count == 0) return 0;
+        var ok = applicable.Count(r => r.Flag is "OK" or "EXPIRING SOON");
+        return Math.Round((double)ok / applicable.Count * 100, 1);
     }
 
     private static double CalcTrainingPercent(List<TrainingReportRow> rows, string[] trainings)
     {
-        if (rows.Count == 0) return 0;
-        var ok = rows.Count(row =>
-            trainings.All(t => ClassifyTraining(row, t) is TrainingStatus.Ok or TrainingStatus.ExpiringSoon));
-        return Math.Round((double)ok / rows.Count * 100, 1);
+        var (applicable, compliant) = TrainingCompliance(rows, trainings);
+        return applicable > 0 ? Math.Round((double)compliant / applicable * 100, 1) : 0;
+    }
+
+    /// <summary>
+    /// Count members who are (a) required to hold at least one of these trainings, and
+    /// (b) compliant across all of them. Members not required for ANY of the trainings
+    /// (e.g. honorary / NMND roles -> "Exempt") are excluded from both totals so they
+    /// neither help nor drag down the percentage. A not-required item counts as fine.
+    /// </summary>
+    private static (int applicable, int compliant) TrainingCompliance(
+        IEnumerable<TrainingReportRow> rows, string[] trainings)
+    {
+        int applicable = 0, compliant = 0;
+        foreach (var row in rows)
+        {
+            var statuses = trainings.Select(t => ClassifyTraining(row, t)).ToList();
+            if (statuses.All(s => s == TrainingStatus.NotRequired))
+                continue; // exempt from all of these -> excluded from the %
+            applicable++;
+            if (statuses.All(s => s is TrainingStatus.Ok or TrainingStatus.ExpiringSoon or TrainingStatus.NotRequired))
+                compliant++;
+        }
+        return (applicable, compliant);
     }
 
     private static TrainingBreakdown BuildTrainingBreakdown(string title, IReadOnlyList<TrainingReportRow> rows)
@@ -621,10 +646,12 @@ public partial class DashboardViewModel : ObservableObject
                 case TrainingStatus.Expired: expired.Add(row.Name); break;
                 case TrainingStatus.ExpiringSoon: expiring.Add(row.Name); break;
                 case TrainingStatus.Missing: missing.Add(row.Name); break;
+                case TrainingStatus.NotRequired: break; // exempt -> excluded from the breakdown
             }
         }
 
-        var total = rows.Count;
+        // Exclude not-required (exempt) members from the denominator.
+        var total = ok.Count + expired.Count + expiring.Count + missing.Count;
         return new TrainingBreakdown
         {
             Title = title,
@@ -639,12 +666,16 @@ public partial class DashboardViewModel : ObservableObject
         };
     }
 
-    private enum TrainingStatus { Ok, Expired, ExpiringSoon, Missing }
+    private enum TrainingStatus { Ok, Expired, ExpiringSoon, Missing, NotRequired }
 
     private static TrainingStatus ClassifyTraining(TrainingReportRow row, string title)
     {
         var mainVal = row.TrainingColumns.GetValueOrDefault(title, "");
         var warnVal = row.TrainingColumns.GetValueOrDefault($"{title} Warning", "");
+
+        // "Exempt" = the member's role(s) don't require this learning and they don't hold it.
+        if (string.Equals(mainVal, "Exempt", StringComparison.OrdinalIgnoreCase))
+            return TrainingStatus.NotRequired;
 
         if (string.Equals(mainVal, "MISSING", StringComparison.OrdinalIgnoreCase)
             || string.IsNullOrEmpty(mainVal))

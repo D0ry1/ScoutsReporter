@@ -9,7 +9,7 @@
     <ApplicationIcon>app.ico</ApplicationIcon>
     <AssemblyName>ScoutsReporter</AssemblyName>
     <RootNamespace>ScoutsReporter</RootNamespace>
-    <Version>1.5.1</Version>
+    <Version>1.5.2</Version>
     <StartupObject>ScoutsReporter.App</StartupObject>
   </PropertyGroup>
 
@@ -24,6 +24,13 @@
   <ItemGroup>
     <ApplicationDefinition Remove="App.xaml" />
     <Page Include="App.xaml" />
+  </ItemGroup>
+
+  <!-- The unit-test project lives under Tests/ and is built separately; keep its
+       sources out of the WPF app build. -->
+  <ItemGroup>
+    <Compile Remove="Tests\**\*.cs" />
+    <Page Remove="Tests\**\*.xaml" />
   </ItemGroup>
 
   <ItemGroup>

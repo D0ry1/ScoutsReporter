@@ -121,11 +121,12 @@ public class TrainingService
                     byTitle[title] = r;
             }
 
-            // Helpers-only: exempt from all 3. Any Trustee Board role: need Safety & Safeguarding.
-            bool helpersOnly = mem.Roles.Count > 0 &&
-                mem.Roles.All(role => role.Contains("Helpers"));
-            bool exemptTeamOnly = mem.Roles.Count > 0 &&
-                mem.Roles.All(role => role.Contains("Trustee Board") || role.Contains("Helpers"));
+            // POR (Chapter 16 Teams Table): which learning this member's current role(s)
+            // actually require. An item is required if ANY role requires it. Note: if the
+            // member actually HOLDS a record for a training it is always shown below
+            // regardless of requirement — "Exempt" only applies to a not-required item the
+            // member doesn't already hold.
+            var reqs = RoleRequirements.ForMember(mem.Roles);
 
             var row = new TrainingReportRow
             {
@@ -158,7 +159,14 @@ public class TrainingService
                 {
                     if (ExpiringTrainings.Contains(title))
                     {
-                        if (helpersOnly || (title == "First Response" && exemptTeamOnly))
+                        bool required = title switch
+                        {
+                            "First Response" => reqs.FirstResponse,
+                            "Safety" => reqs.Safety,
+                            "Safeguarding" => reqs.Safeguarding,
+                            _ => true,
+                        };
+                        if (!required)
                         {
                             row.TrainingColumns[title] = "Exempt";
                         }
