@@ -29,3 +29,8 @@ membership_refresh_token.txt
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# MSIX build artifacts (not source)
+Store/staging/
+Store/*.msix
+Store/*.cer
