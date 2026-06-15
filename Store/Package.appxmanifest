@@ -13,7 +13,7 @@
             ProcessorArchitecture="x64" />
 
   <Properties>
-    <DisplayName>Scouts Reporter</DisplayName>
+    <DisplayName>ScoutsReporter</DisplayName>
     <PublisherDisplayName>D0ry1</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
     <Description>DBS, training and permit compliance reports for Scout groups and districts.</Description>
@@ -30,7 +30,7 @@
   <Applications>
     <Application Id="ScoutsReporter" Executable="ScoutsReporter.exe" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-        DisplayName="Scouts Reporter"
+        DisplayName="ScoutsReporter"
         Description="DBS, training and permit compliance reports for Scout groups and districts."
         BackgroundColor="transparent"
         Square150x150Logo="Images\Square150x150Logo.png"
